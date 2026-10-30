@@ -1,0 +1,199 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1350" height="1000" viewBox="0 0 1350 1000" font-family="Arial, Helvetica, sans-serif">
+<rect width="1350" height="1000" fill="#ffffff"/>
+<text x="40" y="34" font-size="20" font-weight="bold" fill="#2b2b2b">Diagrama entidad-relacion - Pan, Puntos y Premios</text>
+<polyline points="290,107 380,94" fill="none" stroke="#555555" stroke-width="1.5"/>
+<text x="307" y="119" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">1</text>
+<text x="363" y="90" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">N</text>
+<polyline points="630,94 720,107" fill="none" stroke="#555555" stroke-width="1.5"/>
+<text x="644" y="110" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">1</text>
+<text x="706" y="99" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">N</text>
+<polyline points="115,296 115,400" fill="none" stroke="#555555" stroke-width="1.5"/>
+<text x="105" y="316" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">1</text>
+<text x="125" y="388" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">N</text>
+<polyline points="455,230 455,400" fill="none" stroke="#555555" stroke-width="1.5"/>
+<text x="445" y="250" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">1</text>
+<text x="465" y="388" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">N</text>
+<polyline points="720,438 630,434" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="705" y="432" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">1</text>
+<text x="645" y="449" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">N</text>
+<polyline points="970,438 1060,434" fill="none" stroke="#555555" stroke-width="1.5"/>
+<text x="986" y="452" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">1</text>
+<text x="1044" y="429" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">N</text>
+<polyline points="380,204 290,438" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="365" y="220" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">1</text>
+<text x="305" y="431" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">N</text>
+<polyline points="580,230 580,330 1185,330 1185,400" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="570" y="250" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">1</text>
+<text x="1195" y="388" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">N</text>
+<polyline points="115,720 115,592" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="125" y="708" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">1</text>
+<text x="105" y="612" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">N</text>
+<polyline points="455,720 455,570" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="465" y="708" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">1</text>
+<text x="445" y="590" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">N</text>
+<polyline points="380,827 290,805" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="367" y="817" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">1</text>
+<text x="303" y="823" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">N</text>
+<polyline points="745,592 630,763" fill="none" stroke="#555555" stroke-width="1.5"/>
+<text x="728" y="604" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">1</text>
+<text x="647" y="759" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">N</text>
+<polyline points="870,592 870,680 228,680 228,720" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="860" y="612" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">1</text>
+<text x="238" y="708" font-size="13" font-weight="bold" fill="#7a3e1d" text-anchor="middle">N</text>
+<rect x="40" y="60" width="250" height="236" fill="#fffaf2" stroke="#7a3e1d" stroke-width="1.5"/>
+<rect x="40" y="60" width="250" height="30" fill="#7a3e1d"/>
+<text x="50" y="80" font-size="14" font-weight="bold" fill="#ffffff">clientes</text>
+<text x="50" y="104" font-size="12" font-weight="bold" fill="#7a3e1d">PK</text>
+<text x="80" y="104" font-size="13" fill="#2b2b2b" font-weight="bold">id_cliente</text>
+<text x="50" y="126" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="126" font-size="13" fill="#2b2b2b">documento (unico)</text>
+<text x="50" y="148" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="148" font-size="13" fill="#2b2b2b">nombre</text>
+<text x="50" y="170" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="170" font-size="13" fill="#2b2b2b">apellidos</text>
+<text x="50" y="192" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="192" font-size="13" fill="#2b2b2b">telefono</text>
+<text x="50" y="214" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="214" font-size="13" fill="#2b2b2b">email</text>
+<text x="50" y="236" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="236" font-size="13" fill="#2b2b2b">puntos</text>
+<text x="50" y="258" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="258" font-size="13" fill="#2b2b2b">activo</text>
+<text x="50" y="280" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="280" font-size="13" fill="#2b2b2b">fecha_registro</text>
+<rect x="380" y="60" width="250" height="170" fill="#fffaf2" stroke="#7a3e1d" stroke-width="1.5"/>
+<rect x="380" y="60" width="250" height="30" fill="#7a3e1d"/>
+<text x="390" y="80" font-size="14" font-weight="bold" fill="#ffffff">pedidos</text>
+<text x="390" y="104" font-size="12" font-weight="bold" fill="#7a3e1d">PK</text>
+<text x="420" y="104" font-size="13" fill="#2b2b2b" font-weight="bold">id_pedido</text>
+<text x="390" y="126" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="420" y="126" font-size="13" fill="#2b2b2b">id_cliente</text>
+<text x="390" y="148" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="420" y="148" font-size="13" fill="#2b2b2b">fecha</text>
+<text x="390" y="170" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="420" y="170" font-size="13" fill="#2b2b2b">estado</text>
+<text x="390" y="192" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="420" y="192" font-size="13" fill="#2b2b2b">total</text>
+<text x="390" y="214" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="420" y="214" font-size="13" fill="#2b2b2b">puntos_ganados</text>
+<rect x="720" y="60" width="250" height="236" fill="#fffaf2" stroke="#7a3e1d" stroke-width="1.5"/>
+<rect x="720" y="60" width="250" height="30" fill="#7a3e1d"/>
+<text x="730" y="80" font-size="14" font-weight="bold" fill="#ffffff">pagos</text>
+<text x="730" y="104" font-size="12" font-weight="bold" fill="#7a3e1d">PK</text>
+<text x="760" y="104" font-size="13" fill="#2b2b2b" font-weight="bold">id_pago</text>
+<text x="730" y="126" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="760" y="126" font-size="13" fill="#2b2b2b">id_pedido</text>
+<text x="730" y="148" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="760" y="148" font-size="13" fill="#2b2b2b">metodo</text>
+<text x="730" y="170" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="760" y="170" font-size="13" fill="#2b2b2b">monto</text>
+<text x="730" y="192" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="760" y="192" font-size="13" fill="#2b2b2b">monto_recibido</text>
+<text x="730" y="214" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="760" y="214" font-size="13" fill="#2b2b2b">cambio</text>
+<text x="730" y="236" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="760" y="236" font-size="13" fill="#2b2b2b">estado</text>
+<text x="730" y="258" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="760" y="258" font-size="13" fill="#2b2b2b">referencia</text>
+<text x="730" y="280" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="760" y="280" font-size="13" fill="#2b2b2b">fecha</text>
+<rect x="40" y="400" width="250" height="192" fill="#fffaf2" stroke="#7a3e1d" stroke-width="1.5"/>
+<rect x="40" y="400" width="250" height="30" fill="#7a3e1d"/>
+<text x="50" y="420" font-size="14" font-weight="bold" fill="#ffffff">movimientos_puntos</text>
+<text x="50" y="444" font-size="12" font-weight="bold" fill="#7a3e1d">PK</text>
+<text x="80" y="444" font-size="13" fill="#2b2b2b" font-weight="bold">id_movimiento</text>
+<text x="50" y="466" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="80" y="466" font-size="13" fill="#2b2b2b">id_cliente</text>
+<text x="50" y="488" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="488" font-size="13" fill="#2b2b2b">fecha</text>
+<text x="50" y="510" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="510" font-size="13" fill="#2b2b2b">puntos</text>
+<text x="50" y="532" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="532" font-size="13" fill="#2b2b2b">tipo</text>
+<text x="50" y="554" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="80" y="554" font-size="13" fill="#2b2b2b">id_pedido</text>
+<text x="50" y="576" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="80" y="576" font-size="13" fill="#2b2b2b">id_recompensa</text>
+<rect x="380" y="400" width="250" height="170" fill="#fffaf2" stroke="#7a3e1d" stroke-width="1.5"/>
+<rect x="380" y="400" width="250" height="30" fill="#7a3e1d"/>
+<text x="390" y="420" font-size="14" font-weight="bold" fill="#ffffff">detalle_pedido</text>
+<text x="390" y="444" font-size="12" font-weight="bold" fill="#7a3e1d">PK</text>
+<text x="420" y="444" font-size="13" fill="#2b2b2b" font-weight="bold">id_detalle</text>
+<text x="390" y="466" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="420" y="466" font-size="13" fill="#2b2b2b">id_pedido</text>
+<text x="390" y="488" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="420" y="488" font-size="13" fill="#2b2b2b">id_producto</text>
+<text x="390" y="510" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="420" y="510" font-size="13" fill="#2b2b2b">id_menu</text>
+<text x="390" y="532" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="420" y="532" font-size="13" fill="#2b2b2b">cantidad</text>
+<text x="390" y="554" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="420" y="554" font-size="13" fill="#2b2b2b">precio_unitario</text>
+<rect x="720" y="400" width="250" height="192" fill="#fffaf2" stroke="#7a3e1d" stroke-width="1.5"/>
+<rect x="720" y="400" width="250" height="30" fill="#7a3e1d"/>
+<text x="730" y="420" font-size="14" font-weight="bold" fill="#ffffff">productos</text>
+<text x="730" y="444" font-size="12" font-weight="bold" fill="#7a3e1d">PK</text>
+<text x="760" y="444" font-size="13" fill="#2b2b2b" font-weight="bold">id_producto</text>
+<text x="730" y="466" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="760" y="466" font-size="13" fill="#2b2b2b">codigo (unico)</text>
+<text x="730" y="488" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="760" y="488" font-size="13" fill="#2b2b2b">categoria</text>
+<text x="730" y="510" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="760" y="510" font-size="13" fill="#2b2b2b">nombre</text>
+<text x="730" y="532" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="760" y="532" font-size="13" fill="#2b2b2b">precio</text>
+<text x="730" y="554" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="760" y="554" font-size="13" fill="#2b2b2b">existencia</text>
+<text x="730" y="576" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="760" y="576" font-size="13" fill="#2b2b2b">activo</text>
+<rect x="1060" y="400" width="250" height="170" fill="#fffaf2" stroke="#7a3e1d" stroke-width="1.5"/>
+<rect x="1060" y="400" width="250" height="30" fill="#7a3e1d"/>
+<text x="1070" y="420" font-size="14" font-weight="bold" fill="#ffffff">movimientos_inventario</text>
+<text x="1070" y="444" font-size="12" font-weight="bold" fill="#7a3e1d">PK</text>
+<text x="1100" y="444" font-size="13" fill="#2b2b2b" font-weight="bold">id_movimiento</text>
+<text x="1070" y="466" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="1100" y="466" font-size="13" fill="#2b2b2b">id_producto</text>
+<text x="1070" y="488" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="1100" y="488" font-size="13" fill="#2b2b2b">fecha</text>
+<text x="1070" y="510" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="1100" y="510" font-size="13" fill="#2b2b2b">cantidad</text>
+<text x="1070" y="532" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="1100" y="532" font-size="13" fill="#2b2b2b">tipo</text>
+<text x="1070" y="554" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="1100" y="554" font-size="13" fill="#2b2b2b">id_pedido</text>
+<rect x="40" y="720" width="250" height="170" fill="#fffaf2" stroke="#7a3e1d" stroke-width="1.5"/>
+<rect x="40" y="720" width="250" height="30" fill="#7a3e1d"/>
+<text x="50" y="740" font-size="14" font-weight="bold" fill="#ffffff">recompensas</text>
+<text x="50" y="764" font-size="12" font-weight="bold" fill="#7a3e1d">PK</text>
+<text x="80" y="764" font-size="13" fill="#2b2b2b" font-weight="bold">id_recompensa</text>
+<text x="50" y="786" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="786" font-size="13" fill="#2b2b2b">nombre</text>
+<text x="50" y="808" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="808" font-size="13" fill="#2b2b2b">puntos_requeridos</text>
+<text x="50" y="830" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="80" y="830" font-size="13" fill="#2b2b2b">id_producto</text>
+<text x="50" y="852" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="80" y="852" font-size="13" fill="#2b2b2b">id_menu</text>
+<text x="50" y="874" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="80" y="874" font-size="13" fill="#2b2b2b">activa</text>
+<rect x="380" y="720" width="250" height="214" fill="#fffaf2" stroke="#7a3e1d" stroke-width="1.5"/>
+<rect x="380" y="720" width="250" height="30" fill="#7a3e1d"/>
+<text x="390" y="740" font-size="14" font-weight="bold" fill="#ffffff">menus</text>
+<text x="390" y="764" font-size="12" font-weight="bold" fill="#7a3e1d">PK</text>
+<text x="420" y="764" font-size="13" fill="#2b2b2b" font-weight="bold">id_menu</text>
+<text x="390" y="786" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="420" y="786" font-size="13" fill="#2b2b2b">codigo (unico)</text>
+<text x="390" y="808" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="420" y="808" font-size="13" fill="#2b2b2b">nombre</text>
+<text x="390" y="830" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="420" y="830" font-size="13" fill="#2b2b2b">precio</text>
+<text x="390" y="852" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="420" y="852" font-size="13" fill="#2b2b2b">id_sandwich</text>
+<text x="390" y="874" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="420" y="874" font-size="13" fill="#2b2b2b">id_bebida</text>
+<text x="390" y="896" font-size="12" font-weight="bold" fill="#7a3e1d">FK</text>
+<text x="420" y="896" font-size="13" fill="#2b2b2b">id_acompanamiento</text>
+<text x="390" y="918" font-size="12" font-weight="bold" fill="#7a3e1d"></text>
+<text x="420" y="918" font-size="13" fill="#2b2b2b">activo</text>
+<text x="40" y="975" font-size="12" fill="#555555">Linea continua: relacion obligatoria. Linea punteada: relacion opcional. 1 = lado padre, N = lado hijo.</text>
+</svg>
