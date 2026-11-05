@@ -51,8 +51,31 @@ public class PagoDAOImpl implements PagoDAO {
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
+
                 if (rs.next()) {
                     pago.setId(rs.getInt(1));
+                } else {
+                    throw new SQLException(
+                            "No se pudo recuperar el ID del pago.");
+                }
+            }
+        }
+
+        String sqlFecha = "SELECT fecha FROM pagos WHERE id_pago = ?";
+
+        try (PreparedStatement psFecha = con.prepareStatement(sqlFecha)) {
+
+            psFecha.setInt(1, pago.getId());
+
+            try (ResultSet rsFecha = psFecha.executeQuery()) {
+
+                if (rsFecha.next()) {
+
+                    Timestamp fecha = rsFecha.getTimestamp("fecha");
+
+                    if (fecha != null) {
+                        pago.setFecha(fecha.toLocalDateTime());
+                    }
                 }
             }
         }
@@ -74,27 +97,34 @@ public class PagoDAOImpl implements PagoDAO {
             try (ResultSet rs = ps.executeQuery()) {
 
                 while (rs.next()) {
+
                     Pago pago = new Pago();
 
                     pago.setId(rs.getInt("id_pago"));
                     pago.setIdPedido(rs.getInt("id_pedido"));
+
                     pago.setMetodo(
                             MetodoPago.valueOf(rs.getString("metodo")));
+
                     pago.setMonto(rs.getDouble("monto"));
 
                     double recibido = rs.getDouble("monto_recibido");
+
                     pago.setMontoRecibido(
                             rs.wasNull() ? null : recibido);
 
                     double cambio = rs.getDouble("cambio");
+
                     pago.setCambio(
                             rs.wasNull() ? null : cambio);
 
                     pago.setEstado(
                             EstadoPago.valueOf(rs.getString("estado")));
+
                     pago.setReferencia(rs.getString("referencia"));
 
                     Timestamp fecha = rs.getTimestamp("fecha");
+
                     if (fecha != null) {
                         pago.setFecha(fecha.toLocalDateTime());
                     }
