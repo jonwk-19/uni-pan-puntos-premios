@@ -8,6 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Procesar pago</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -50,8 +51,16 @@
         }
 
         .error { color: red; }
+
+        .simulacion {
+            padding: 12px;
+            margin-top: 15px;
+            background: #f8f1eb;
+            border-radius: 5px;
+        }
     </style>
 </head>
+
 <body>
 
 <div class="contenedor">
@@ -62,7 +71,9 @@
 
     if (pedido == null) {
 %>
+
     <h2>No se encontró el pedido.</h2>
+
 <%
     } else {
 %>
@@ -74,7 +85,9 @@
     <% } %>
 
     <p><strong>Pedido:</strong> #<%= pedido.getId() %></p>
-    <p><strong>Total a pagar:</strong>
+
+    <p>
+        <strong>Total a pagar:</strong>
         Q <%= String.format("%.2f", pedido.getTotal()) %>
     </p>
 
@@ -84,18 +97,47 @@
                value="<%= pedido.getId() %>">
 
         <label>Método de pago:</label>
+
         <select name="metodo" id="metodo" required
-                onchange="mostrarEfectivo()">
+                onchange="mostrarCampos()">
+
             <option value="">Selecciona un método</option>
             <option value="EFECTIVO">Efectivo</option>
             <option value="TARJETA">Tarjeta</option>
+
         </select>
 
         <div id="campoEfectivo" style="display:none;">
+
             <label>Dinero recibido (Q):</label>
-            <input type="number" name="montoRecibido"
-                   id="montoRecibido" min="<%= pedido.getTotal() %>"
+
+            <input type="number"
+                   name="montoRecibido"
+                   id="montoRecibido"
+                   min="<%= pedido.getTotal() %>"
                    step="0.01">
+
+        </div>
+
+        <div id="campoTarjeta" class="simulacion"
+             style="display:none;">
+
+            <label>Resultado de tarjeta simulada:</label>
+
+            <select name="tarjetaAprobada" id="tarjetaAprobada">
+
+                <option value="true">Tarjeta aprobada</option>
+                <option value="false">Tarjeta rechazada</option>
+
+            </select>
+
+            <p>
+                <small>
+                    Esta opción sirve para probar ambos resultados
+                    del pago con tarjeta.
+                </small>
+            </p>
+
         </div>
 
         <button type="submit">Procesar pago</button>
@@ -113,13 +155,24 @@
 </div>
 
 <script>
-    function mostrarEfectivo() {
-        const metodo = document.getElementById("metodo").value;
-        const campo = document.getElementById("campoEfectivo");
-        const monto = document.getElementById("montoRecibido");
+    function mostrarCampos() {
 
-        campo.style.display = metodo === "EFECTIVO" ? "block" : "none";
+        const metodo = document.getElementById("metodo").value;
+
+        const campoEfectivo = document.getElementById("campoEfectivo");
+        const campoTarjeta = document.getElementById("campoTarjeta");
+
+        const monto = document.getElementById("montoRecibido");
+        const resultadoTarjeta = document.getElementById("tarjetaAprobada");
+
+        campoEfectivo.style.display =
+                metodo === "EFECTIVO" ? "block" : "none";
+
+        campoTarjeta.style.display =
+                metodo === "TARJETA" ? "block" : "none";
+
         monto.required = metodo === "EFECTIVO";
+        resultadoTarjeta.required = metodo === "TARJETA";
     }
 </script>
 

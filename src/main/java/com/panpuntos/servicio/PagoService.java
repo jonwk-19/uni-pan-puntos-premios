@@ -41,17 +41,30 @@ public class PagoService {
     private final InventarioDAO inventarioDAO = new InventarioDAOImpl();
     private final PuntosService puntosService = new PuntosService();
 
+    // Método anterior: se conserva para no romper otros usos.
     public Pago procesarPago(
             Pedido pedido,
             MetodoPago metodo,
             Double montoRecibido) throws SQLException {
 
+        return procesarPago(pedido, metodo, montoRecibido, true);
+    }
+
+    // Nuevo método con simulación de aprobación o rechazo de tarjeta.
+    public Pago procesarPago(
+            Pedido pedido,
+            MetodoPago metodo,
+            Double montoRecibido,
+            boolean tarjetaAprobada) throws SQLException {
+
         if (pedido == null || metodo == null) {
-            throw new IllegalArgumentException("Pedido y método de pago son obligatorios.");
+            throw new IllegalArgumentException(
+                    "Pedido y método de pago son obligatorios.");
         }
 
         if (pedido.getDetalles() == null || pedido.getDetalles().isEmpty()) {
-            throw new IllegalArgumentException("El pedido no tiene productos.");
+            throw new IllegalArgumentException(
+                    "El pedido no tiene productos.");
         }
 
         try (Connection con = ConexionDB.getConexion()) {
@@ -65,19 +78,26 @@ public class PagoService {
                         + "FROM pedidos WHERE id_pedido = ? FOR UPDATE";
 
                 try (PreparedStatement ps = con.prepareStatement(sql)) {
+
                     ps.setInt(1, pedido.getId());
 
                     try (ResultSet rs = ps.executeQuery()) {
+
                         if (!rs.next()) {
                             throw new SQLException("El pedido no existe.");
                         }
 
-                        if (!EstadoPedido.PENDIENTE.name().equals(rs.getString("estado"))) {
-                            throw new SQLException("El pedido no está pendiente de pago.");
+                        if (!EstadoPedido.PENDIENTE.name()
+                                .equals(rs.getString("estado"))) {
+
+                            throw new SQLException(
+                                    "El pedido no está pendiente de pago.");
                         }
 
                         int idCliente = rs.getInt("id_cliente");
-                        pedido.setIdCliente(rs.wasNull() ? null : idCliente);
+                        pedido.setIdCliente(
+                                rs.wasNull() ? null : idCliente);
+
                         pedido.setTotal(rs.getDouble("total"));
                         pedido.setEstado(EstadoPedido.PENDIENTE);
                     }
@@ -85,7 +105,9 @@ public class PagoService {
 
                 double total = pedido.getTotal();
 
+                // Validar efectivo.
                 if (metodo == MetodoPago.EFECTIVO) {
+
                     if (montoRecibido == null || montoRecibido < total) {
                         throw new IllegalArgumentException(
                                 "El dinero recibido es insuficiente.");
@@ -96,11 +118,53 @@ public class PagoService {
                     montoRecibido = null;
                 }
 
+                // Preparar el registro del pago.
+                Pago pago = new Pago();
+
+                pago.setIdPedido(pedido.getId());
+                pago.setMetodo(metodo);
+                pago.setMonto(total);
+
+                if (metodo == MetodoPago.EFECTIVO) {
+
+                    pago.setEstado(EstadoPago.APROBADO);
+                    pago.setMontoRecibido(montoRecibido);
+                    pago.setCambio(montoRecibido - total);
+
+                } else {
+
+                    pago.setReferencia(
+                            "SIM-" + UUID.randomUUID().toString()
+                                    .substring(0, 12).toUpperCase()
+                    );
+
+                    pago.setEstado(
+                            tarjetaAprobada
+                                    ? EstadoPago.APROBADO
+                                    : EstadoPago.RECHAZADO
+                    );
+                }
+
+                // Si la tarjeta es rechazada, registrar solamente
+                // el intento de pago. No tocar inventario ni puntos.
+                if (pago.getEstado() == EstadoPago.RECHAZADO) {
+
+                    pagoDAO.registrar(con, pago);
+
+                    con.commit();
+
+                    pedido.setPuntosGanados(0);
+
+                    return pago;
+                }
+
+                // A partir de aquí el pago está aprobado.
                 // Descontar inventario y registrar movimientos.
                 for (DetallePedido detalle : pedido.getDetalles()) {
 
                     if (detalle.getCantidad() <= 0) {
-                        throw new SQLException("La cantidad del producto no es válida.");
+                        throw new SQLException(
+                                "La cantidad del producto no es válida.");
                     }
 
                     if (detalle.getIdProducto() != null) {
@@ -114,16 +178,22 @@ public class PagoService {
 
                     } else if (detalle.getIdMenu() != null) {
 
-                        Menu menu = menuDAO.buscarPorId(detalle.getIdMenu());
+                        // Buscar el menú usando la misma conexión.
+                        Menu menu = menuDAO.buscarPorId(
+                                con,
+                                detalle.getIdMenu()
+                        );
 
                         if (menu == null || !menu.isActivo()) {
-                            throw new SQLException("El menú no está disponible.");
+                            throw new SQLException(
+                                    "El menú no está disponible.");
                         }
 
                         for (Producto componente : menu.getComponentes()) {
 
                             if (componente == null || !componente.isActivo()) {
-                                throw new SQLException("Un componente del menú no está disponible.");
+                                throw new SQLException(
+                                        "Un componente del menú no está disponible.");
                             }
 
                             descontarProducto(
@@ -135,27 +205,13 @@ public class PagoService {
                         }
 
                     } else {
-                        throw new SQLException("El detalle no tiene producto ni menú.");
+
+                        throw new SQLException(
+                                "El detalle no tiene producto ni menú.");
                     }
                 }
 
-                // Preparar el pago.
-                Pago pago = new Pago();
-                pago.setIdPedido(pedido.getId());
-                pago.setMetodo(metodo);
-                pago.setMonto(total);
-                pago.setEstado(EstadoPago.APROBADO);
-
-                if (metodo == MetodoPago.EFECTIVO) {
-                    pago.setMontoRecibido(montoRecibido);
-                    pago.setCambio(montoRecibido - total);
-                } else {
-                    pago.setReferencia(
-                            "SIM-" + UUID.randomUUID().toString()
-                                    .substring(0, 12).toUpperCase()
-                    );
-                }
-
+                // Registrar el pago aprobado.
                 pagoDAO.registrar(con, pago);
 
                 // Cambiar el estado del pedido.
@@ -167,20 +223,17 @@ public class PagoService {
 
                 pedido.setEstado(EstadoPedido.PAGADO);
 
-                // Acreditar puntos al cliente.
+                // Acreditar puntos dentro de la misma transacción.
+                // PuntosService también actualiza pedidos.puntos_ganados.
                 puntosService.acreditar(con, pedido);
 
-                pedidoDAO.actualizarPuntos(
-                        con,
-                        pedido.getId(),
-                        pedido.getPuntosGanados()
-                );
-
+                // Confirmar todos los cambios juntos.
                 con.commit();
 
                 return pago;
 
             } catch (SQLException | RuntimeException e) {
+
                 con.rollback();
                 throw e;
             }
@@ -201,10 +254,12 @@ public class PagoService {
 
         if (!descontado) {
             throw new SQLException(
-                    "No hay suficiente existencia para el producto ID: " + idProducto);
+                    "No hay suficiente existencia para el producto ID: "
+                    + idProducto);
         }
 
         MovimientoInventario movimiento = new MovimientoInventario();
+
         movimiento.setIdProducto(idProducto);
         movimiento.setCantidad(cantidad);
         movimiento.setTipo(TipoMovimientoInventario.SALIDA);

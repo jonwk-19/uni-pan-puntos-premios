@@ -4,6 +4,7 @@ package com.panpuntos.controlador;
 import com.panpuntos.modelo.MetodoPago;
 import com.panpuntos.modelo.Pedido;
 import com.panpuntos.modelo.Pago;
+import com.panpuntos.modelo.EstadoPago;
 import com.panpuntos.servicio.PagoService;
 import com.panpuntos.servicio.PedidoService;
 
@@ -22,16 +23,19 @@ public class PagoServlet extends ControladorBase {
     private final PedidoService pedidoService = new PedidoService();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doGet(
+            HttpServletRequest req,
+            HttpServletResponse resp)
             throws ServletException, IOException {
 
         try {
+
             int idPedido = Integer.parseInt(req.getParameter("id"));
 
             Pedido pedido = pedidoService.buscarPorId(idPedido);
 
             if (pedido == null) {
-                mostrarError(req, resp, "El pedido no existe.");
+                mostrarError(req, resp, "No se encontró el pedido.");
                 return;
             }
 
@@ -41,38 +45,58 @@ public class PagoServlet extends ControladorBase {
             irA(req, resp, "pagos/formulario");
 
         } catch (NumberFormatException e) {
-            mostrarError(req, resp, "El identificador del pedido no es válido.");
+
+            mostrarError(req, resp, "El número de pedido no es válido.");
+
         } catch (SQLException e) {
-            mostrarError(req, resp, "Error de base de datos: " + e.getMessage());
+
+            mostrarError(req, resp, "Error al consultar el pedido: " + e.getMessage());
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(
+            HttpServletRequest req,
+            HttpServletResponse resp)
             throws ServletException, IOException {
 
         try {
+
             int idPedido = Integer.parseInt(req.getParameter("idPedido"));
 
             MetodoPago metodo = MetodoPago.valueOf(
-                    req.getParameter("metodo"));
+                    req.getParameter("metodo")
+            );
 
             Double montoRecibido = null;
+            boolean tarjetaAprobada = false;
 
             if (metodo == MetodoPago.EFECTIVO) {
+
                 montoRecibido = Double.parseDouble(
-                        req.getParameter("montoRecibido").replace(',', '.'));
+                        req.getParameter("montoRecibido").replace(',', '.')
+                );
+
+            } else if (metodo == MetodoPago.TARJETA) {
+
+                tarjetaAprobada = Boolean.parseBoolean(
+                        req.getParameter("tarjetaAprobada")
+                );
             }
 
             Pedido pedido = pedidoService.buscarPorId(idPedido);
 
             if (pedido == null) {
-                mostrarError(req, resp, "El pedido no existe.");
+                mostrarError(req, resp, "No se encontró el pedido.");
                 return;
             }
 
             Pago pago = pagoService.procesarPago(
-                    pedido, metodo, montoRecibido);
+                    pedido,
+                    metodo,
+                    montoRecibido,
+                    tarjetaAprobada
+            );
 
             req.setAttribute("pago", pago);
             req.setAttribute("pedido", pedido);
@@ -80,10 +104,15 @@ public class PagoServlet extends ControladorBase {
             irA(req, resp, "pagos/comprobante");
 
         } catch (NumberFormatException | NullPointerException e) {
-            mostrarError(req, resp, "Verifica los datos del pago.");
+
+            mostrarError(req, resp, "Verifica los datos ingresados.");
+
         } catch (IllegalArgumentException e) {
+
             mostrarError(req, resp, e.getMessage());
+
         } catch (SQLException e) {
+
             mostrarError(req, resp, "No se pudo procesar el pago: " + e.getMessage());
         }
     }
