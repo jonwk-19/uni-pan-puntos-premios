@@ -1,3 +1,4 @@
+
 package com.panpuntos.dao.impl;
 
 import com.panpuntos.dao.ProductoDAO;
@@ -48,15 +49,19 @@ public class ProductoDAOImpl implements ProductoDAO {
     @Override
     public void insertar(Producto producto) throws SQLException {
         String sql = "INSERT INTO productos (codigo, categoria, nombre, precio, existencia, activo) VALUES (?, ?, ?, ?, ?, ?)";
+
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             ps.setString(1, producto.getCodigo());
             ps.setString(2, producto.getCategoria().name());
             ps.setString(3, producto.getNombre());
             ps.setDouble(4, producto.getPrecio());
             ps.setInt(5, producto.getExistencia());
             ps.setBoolean(6, producto.isActivo());
+
             ps.executeUpdate();
+
             try (ResultSet claves = ps.getGeneratedKeys()) {
                 if (claves.next()) {
                     producto.setId(claves.getInt(1));
@@ -68,12 +73,15 @@ public class ProductoDAOImpl implements ProductoDAO {
     @Override
     public void actualizar(Producto producto) throws SQLException {
         String sql = "UPDATE productos SET codigo = ?, nombre = ?, precio = ? WHERE id_producto = ?";
+
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setString(1, producto.getCodigo());
             ps.setString(2, producto.getNombre());
             ps.setDouble(3, producto.getPrecio());
             ps.setInt(4, producto.getId());
+
             ps.executeUpdate();
         }
     }
@@ -81,21 +89,29 @@ public class ProductoDAOImpl implements ProductoDAO {
     @Override
     public void cambiarEstado(int id, boolean activo) throws SQLException {
         String sql = "UPDATE productos SET activo = ? WHERE id_producto = ?";
+
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setBoolean(1, activo);
             ps.setInt(2, id);
+
             ps.executeUpdate();
         }
     }
 
     @Override
     public boolean descontarExistencia(Connection con, int idProducto, int cantidad) throws SQLException {
-        String sql = "UPDATE productos SET existencia = existencia - ? WHERE id_producto = ? AND existencia >= ?";
+
+        String sql = "UPDATE productos SET existencia = existencia - ? "
+                + "WHERE id_producto = ? AND existencia >= ? AND activo = TRUE";
+
         try (PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setInt(1, cantidad);
             ps.setInt(2, idProducto);
             ps.setInt(3, cantidad);
+
             return ps.executeUpdate() > 0;
         }
     }
@@ -103,37 +119,46 @@ public class ProductoDAOImpl implements ProductoDAO {
     @Override
     public void aumentarExistencia(Connection con, int idProducto, int cantidad) throws SQLException {
         String sql = "UPDATE productos SET existencia = existencia + ? WHERE id_producto = ?";
+
         try (PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setInt(1, cantidad);
             ps.setInt(2, idProducto);
+
             ps.executeUpdate();
         }
     }
 
     private List<Producto> consultar(String sql, Object... parametros) throws SQLException {
         List<Producto> productos = new ArrayList<>();
+
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
+
             for (int i = 0; i < parametros.length; i++) {
                 ps.setObject(i + 1, parametros[i]);
             }
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     productos.add(mapear(rs));
                 }
             }
         }
+
         return productos;
     }
 
     private Producto mapear(ResultSet rs) throws SQLException {
         Producto p = Producto.crear(Categoria.valueOf(rs.getString("categoria")));
+
         p.setId(rs.getInt("id_producto"));
         p.setCodigo(rs.getString("codigo"));
         p.setNombre(rs.getString("nombre"));
         p.setPrecio(rs.getDouble("precio"));
         p.setExistencia(rs.getInt("existencia"));
         p.setActivo(rs.getBoolean("activo"));
+
         return p;
     }
 }
