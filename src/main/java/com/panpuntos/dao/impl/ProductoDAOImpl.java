@@ -26,32 +26,48 @@ public class ProductoDAOImpl implements ProductoDAO {
 
     @Override
     public List<Producto> listarPorCategoria(Categoria categoria) throws SQLException {
-        return consultar(SELECT + " WHERE categoria = ? ORDER BY nombre", categoria.name());
+        return consultar(
+                SELECT + " WHERE categoria = ? ORDER BY nombre",
+                categoria.name()
+        );
     }
 
     @Override
     public List<Producto> listarBajoStock(int limite) throws SQLException {
-        return consultar(SELECT + " WHERE activo = TRUE AND existencia <= ? ORDER BY existencia, nombre", limite);
+        return consultar(
+                SELECT + " WHERE activo = TRUE AND existencia <= ? ORDER BY existencia, nombre",
+                limite
+        );
     }
 
     @Override
     public Producto buscarPorId(int id) throws SQLException {
-        List<Producto> encontrados = consultar(SELECT + " WHERE id_producto = ?", id);
+        List<Producto> encontrados =
+                consultar(SELECT + " WHERE id_producto = ?", id);
+
         return encontrados.isEmpty() ? null : encontrados.get(0);
     }
 
     @Override
     public Producto buscarPorCodigo(String codigo) throws SQLException {
-        List<Producto> encontrados = consultar(SELECT + " WHERE codigo = ?", codigo);
+        List<Producto> encontrados =
+                consultar(SELECT + " WHERE codigo = ?", codigo);
+
         return encontrados.isEmpty() ? null : encontrados.get(0);
     }
 
     @Override
     public void insertar(Producto producto) throws SQLException {
-        String sql = "INSERT INTO productos (codigo, categoria, nombre, precio, existencia, activo) VALUES (?, ?, ?, ?, ?, ?)";
+
+        String sql = "INSERT INTO productos "
+                + "(codigo, categoria, nombre, precio, existencia, activo) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection con = ConexionDB.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = con.prepareStatement(
+                     sql,
+                     Statement.RETURN_GENERATED_KEYS
+             )) {
 
             ps.setString(1, producto.getCodigo());
             ps.setString(2, producto.getCategoria().name());
@@ -72,7 +88,10 @@ public class ProductoDAOImpl implements ProductoDAO {
 
     @Override
     public void actualizar(Producto producto) throws SQLException {
-        String sql = "UPDATE productos SET codigo = ?, nombre = ?, precio = ? WHERE id_producto = ?";
+
+        String sql = "UPDATE productos "
+                + "SET codigo = ?, nombre = ?, precio = ? "
+                + "WHERE id_producto = ?";
 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -88,7 +107,9 @@ public class ProductoDAOImpl implements ProductoDAO {
 
     @Override
     public void cambiarEstado(int id, boolean activo) throws SQLException {
-        String sql = "UPDATE productos SET activo = ? WHERE id_producto = ?";
+
+        String sql =
+                "UPDATE productos SET activo = ? WHERE id_producto = ?";
 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -101,10 +122,23 @@ public class ProductoDAOImpl implements ProductoDAO {
     }
 
     @Override
-    public boolean descontarExistencia(Connection con, int idProducto, int cantidad) throws SQLException {
+    public boolean descontarExistencia(
+            Connection con,
+            int idProducto,
+            int cantidad
+    ) throws SQLException {
 
-        String sql = "UPDATE productos SET existencia = existencia - ? "
-                + "WHERE id_producto = ? AND existencia >= ? AND activo = TRUE";
+        if (con == null || idProducto <= 0 || cantidad <= 0) {
+            throw new IllegalArgumentException(
+                    "La conexion, el producto y la cantidad deben ser validos."
+            );
+        }
+
+        String sql = "UPDATE productos "
+                + "SET existencia = existencia - ? "
+                + "WHERE id_producto = ? "
+                + "AND existencia >= ? "
+                + "AND activo = TRUE";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -112,24 +146,45 @@ public class ProductoDAOImpl implements ProductoDAO {
             ps.setInt(2, idProducto);
             ps.setInt(3, cantidad);
 
-            return ps.executeUpdate() > 0;
+            return ps.executeUpdate() == 1;
         }
     }
 
     @Override
-    public void aumentarExistencia(Connection con, int idProducto, int cantidad) throws SQLException {
-        String sql = "UPDATE productos SET existencia = existencia + ? WHERE id_producto = ?";
+    public void aumentarExistencia(
+            Connection con,
+            int idProducto,
+            int cantidad
+    ) throws SQLException {
+
+        if (con == null || idProducto <= 0 || cantidad <= 0) {
+            throw new IllegalArgumentException(
+                    "La conexion, el producto y la cantidad deben ser validos."
+            );
+        }
+
+        String sql = "UPDATE productos "
+                + "SET existencia = existencia + ? "
+                + "WHERE id_producto = ?";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, cantidad);
             ps.setInt(2, idProducto);
 
-            ps.executeUpdate();
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException(
+                        "No se pudo aumentar la existencia del producto."
+                );
+            }
         }
     }
 
-    private List<Producto> consultar(String sql, Object... parametros) throws SQLException {
+    private List<Producto> consultar(
+            String sql,
+            Object... parametros
+    ) throws SQLException {
+
         List<Producto> productos = new ArrayList<>();
 
         try (Connection con = ConexionDB.getConexion();
@@ -140,6 +195,7 @@ public class ProductoDAOImpl implements ProductoDAO {
             }
 
             try (ResultSet rs = ps.executeQuery()) {
+
                 while (rs.next()) {
                     productos.add(mapear(rs));
                 }
@@ -150,7 +206,10 @@ public class ProductoDAOImpl implements ProductoDAO {
     }
 
     private Producto mapear(ResultSet rs) throws SQLException {
-        Producto p = Producto.crear(Categoria.valueOf(rs.getString("categoria")));
+
+        Producto p = Producto.crear(
+                Categoria.valueOf(rs.getString("categoria"))
+        );
 
         p.setId(rs.getInt("id_producto"));
         p.setCodigo(rs.getString("codigo"));
@@ -162,3 +221,4 @@ public class ProductoDAOImpl implements ProductoDAO {
         return p;
     }
 }
+  
