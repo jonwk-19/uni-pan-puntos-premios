@@ -1,8 +1,11 @@
-
 package com.panpuntos.servicio;
 
+import com.panpuntos.dao.impl.MenuDAOImpl;
+import com.panpuntos.dao.impl.ProductoDAOImpl;
 import com.panpuntos.dao.impl.PuntosDAOImpl;
+import com.panpuntos.modelo.Menu;
 import com.panpuntos.modelo.MovimientoPuntos;
+import com.panpuntos.modelo.Producto;
 import com.panpuntos.modelo.Recompensa;
 import com.panpuntos.modelo.TipoMovimientoPuntos;
 import com.panpuntos.util.ConexionDB;
@@ -15,18 +18,15 @@ import java.sql.SQLException;
 public class RecompensaServicio {
 
     private final PuntosDAOImpl puntosDAO = new PuntosDAOImpl();
+    private final ProductoDAOImpl productoDAO = new ProductoDAOImpl();
+    private final MenuDAOImpl menuDAO = new MenuDAOImpl();
 
-    /**
-     * Realiza el canje de una recompensa.
-     *
-     * @return true si el canje se realizó correctamente.
-     */
     public boolean canjear(int idCliente, int idRecompensa)
             throws SQLException {
 
         if (idCliente <= 0 || idRecompensa <= 0) {
             throw new IllegalArgumentException(
-                    "Los identificadores deben ser válidos."
+                    "Los identificadores deben ser validos."
             );
         }
 
@@ -35,35 +35,14 @@ public class RecompensaServicio {
             con.setAutoCommit(false);
 
             try {
-                // 1. Bloquear y verificar al cliente.
-                String sqlCliente =
-                        "SELECT puntos FROM clientes "
-                        + "WHERE id_cliente = ? AND activo = TRUE "
-                        + "FOR UPDATE";
+                int puntosCliente = consultarPuntosCliente(con, idCliente);
 
-                int puntosCliente;
-
-                try (PreparedStatement ps = con.prepareStatement(sqlCliente)) {
-                    ps.setInt(1, idCliente);
-
-                    try (ResultSet rs = ps.executeQuery()) {
-                        if (!rs.next()) {
-                            throw new SQLException(
-                                    "El cliente no existe o está inactivo."
-                            );
-                        }
-
-                        puntosCliente = rs.getInt("puntos");
-                    }
-                }
-
-                // 2. Consultar y bloquear la recompensa.
                 Recompensa recompensa =
                         buscarRecompensa(con, idRecompensa);
 
                 if (recompensa == null || !recompensa.isActiva()) {
                     throw new SQLException(
-                            "La recompensa no existe o está inactiva."
+                            "La recompensa no existe o esta inactiva."
                     );
                 }
 
@@ -71,23 +50,45 @@ public class RecompensaServicio {
 
                 if (costo <= 0) {
                     throw new SQLException(
-                            "El costo de la recompensa no es válido."
+                            "El costo de la recompensa no es valido."
                     );
                 }
 
-                // 3. Comprobar puntos suficientes.
                 if (puntosCliente < costo) {
                     con.rollback();
                     return false;
                 }
 
-                // 4. Descontar los puntos.
+                // Descontar y validar el producto o menu.
+                if (recompensa.getIdProducto() != null) {
+
+                    descontarProducto(
+                            con,
+                            recompensa.getIdProducto()
+                    );
+
+                } else if (recompensa.getIdMenu() != null) {
+
+                    descontarMenu(
+                            con,
+                            recompensa.getIdMenu()
+                    );
+
+                } else {
+                    throw new SQLException(
+                            "La recompensa no tiene un producto o menu."
+                    );
+                }
+
+           
                 String sqlDescuento =
                         "UPDATE clientes SET puntos = puntos - ? "
                         + "WHERE id_cliente = ? "
                         + "AND activo = TRUE AND puntos >= ?";
 
-                try (PreparedStatement ps = con.prepareStatement(sqlDescuento)) {
+                try (PreparedStatement ps =
+                             con.prepareStatement(sqlDescuento)) {
+
                     ps.setInt(1, costo);
                     ps.setInt(2, idCliente);
                     ps.setInt(3, costo);
@@ -99,20 +100,17 @@ public class RecompensaServicio {
                     }
                 }
 
-                // 5. Registrar el movimiento de canje.
+            
                 MovimientoPuntos movimiento = new MovimientoPuntos();
-
                 movimiento.setIdCliente(idCliente);
-                movimiento.setPuntos(costo);
+                movimiento.setPuntos(-costo);
                 movimiento.setTipo(TipoMovimientoPuntos.CANJE);
                 movimiento.setIdPedido(null);
                 movimiento.setIdRecompensa(idRecompensa);
 
                 puntosDAO.registrarMovimiento(con, movimiento);
 
-                // 6. Confirmar la transacción.
                 con.commit();
-
                 return true;
 
             } catch (SQLException | RuntimeException e) {
@@ -122,12 +120,33 @@ public class RecompensaServicio {
         }
     }
 
-    /**
-     * Busca una recompensa utilizando la misma conexión
-     * de la transacción y bloquea su registro.
-     */
-    private Recompensa buscarRecompensa(Connection con, int id)
+    private int consultarPuntosCliente(Connection con, int idCliente)
             throws SQLException {
+
+        String sql =
+                "SELECT puntos FROM clientes "
+                + "WHERE id_cliente = ? AND activo = TRUE "
+                + "FOR UPDATE";
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idCliente);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (!rs.next()) {
+                    throw new SQLException(
+                            "El cliente no existe o esta inactivo."
+                    );
+                }
+
+                return rs.getInt("puntos");
+            }
+        }
+    }
+
+    private Recompensa buscarRecompensa(
+            Connection con, int idRecompensa) throws SQLException {
 
         String sql =
                 "SELECT id_recompensa, nombre, puntos_requeridos, "
@@ -138,7 +157,7 @@ public class RecompensaServicio {
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setInt(1, id);
+            ps.setInt(1, idRecompensa);
 
             try (ResultSet rs = ps.executeQuery()) {
 
@@ -170,5 +189,50 @@ public class RecompensaServicio {
             }
         }
     }
-}
 
+    private void descontarProducto(
+            Connection con, int idProducto) throws SQLException {
+
+        if (!productoDAO.descontarExistencia(con, idProducto, 1)) {
+            throw new SQLException(
+                    "El producto esta inactivo o no tiene existencias."
+            );
+        }
+    }
+
+    private void descontarMenu(
+            Connection con, int idMenu) throws SQLException {
+
+        // Bloquear y validar el menu.
+        String sql =
+                "SELECT activo FROM menus "
+                + "WHERE id_menu = ? FOR UPDATE";
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idMenu);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (!rs.next() || !rs.getBoolean("activo")) {
+                    throw new SQLException(
+                            "El menu no existe o esta inactivo."
+                    );
+                }
+            }
+        }
+
+        Menu menu = menuDAO.buscarPorId(con, idMenu);
+
+        if (menu == null || !menu.estaDisponible(1)) {
+            throw new SQLException(
+                    "El menu o alguno de sus componentes no esta disponible."
+            );
+        }
+
+      
+        for (Producto componente : menu.getComponentes()) {
+            descontarProducto(con, componente.getId());
+        }
+    }
+}
