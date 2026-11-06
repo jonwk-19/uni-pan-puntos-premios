@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,28 +54,43 @@ public class ClienteDAOImpl implements ClienteDAO {
 
     @Override
     public Cliente buscarPorId(int id) throws SQLException {
-        List<Cliente> clientes = consultar(SELECT + " WHERE id_cliente = ?", id);
+        List<Cliente> clientes =
+                consultar(SELECT + " WHERE id_cliente = ?", id);
+
         return clientes.isEmpty() ? null : clientes.get(0);
     }
 
     @Override
     public Cliente buscarPorDocumento(String documento) throws SQLException {
-        List<Cliente> clientes = consultar(SELECT + " WHERE documento = ?", documento);
+        List<Cliente> clientes =
+                consultar(SELECT + " WHERE documento = ?", documento);
+
         return clientes.isEmpty() ? null : clientes.get(0);
     }
 
     @Override
     public void insertar(Cliente cliente) throws SQLException {
-        String sql = "INSERT INTO clientes (documento, nombre, apellidos, telefono, email) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO clientes "
+                + "(documento, nombre, apellidos, telefono, email, puntos, activo) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection con = ConexionDB.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = con.prepareStatement(
+                     sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, cliente.getDocumento());
             ps.setString(2, cliente.getNombre());
             ps.setString(3, cliente.getApellidos());
             ps.setString(4, cliente.getTelefono());
-            ps.setString(5, cliente.getEmail());
+
+            if (cliente.getEmail() == null) {
+                ps.setNull(5, Types.VARCHAR);
+            } else {
+                ps.setString(5, cliente.getEmail());
+            }
+
+            ps.setInt(6, cliente.getPuntos());
+            ps.setBoolean(7, cliente.isActivo());
 
             ps.executeUpdate();
 
@@ -88,7 +104,9 @@ public class ClienteDAOImpl implements ClienteDAO {
 
     @Override
     public void actualizar(Cliente cliente) throws SQLException {
-        String sql = "UPDATE clientes SET documento = ?, nombre = ?, apellidos = ?, telefono = ?, email = ? WHERE id_cliente = ?";
+        String sql = "UPDATE clientes SET documento = ?, nombre = ?, "
+                + "apellidos = ?, telefono = ?, email = ? "
+                + "WHERE id_cliente = ?";
 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -97,7 +115,13 @@ public class ClienteDAOImpl implements ClienteDAO {
             ps.setString(2, cliente.getNombre());
             ps.setString(3, cliente.getApellidos());
             ps.setString(4, cliente.getTelefono());
-            ps.setString(5, cliente.getEmail());
+
+            if (cliente.getEmail() == null) {
+                ps.setNull(5, Types.VARCHAR);
+            } else {
+                ps.setString(5, cliente.getEmail());
+            }
+
             ps.setInt(6, cliente.getId());
 
             ps.executeUpdate();
@@ -120,7 +144,9 @@ public class ClienteDAOImpl implements ClienteDAO {
 
     @Override
     public boolean tieneCompras(int id) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM pedidos WHERE id_cliente = ? AND estado IN ('PAGADO', 'ENTREGADO')";
+        String sql = "SELECT COUNT(*) FROM pedidos "
+                + "WHERE id_cliente = ? "
+                + "AND estado IN ('PAGADO', 'ENTREGADO')";
 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -134,19 +160,29 @@ public class ClienteDAOImpl implements ClienteDAO {
     }
 
     @Override
-    public void sumarPuntos(Connection con, int idCliente, int puntos) throws SQLException {
-        String sql = "UPDATE clientes SET puntos = puntos + ? WHERE id_cliente = ? AND activo = TRUE";
+    public void sumarPuntos(Connection con, int idCliente, int puntos)
+            throws SQLException {
+
+        String sql = "UPDATE clientes SET puntos = puntos + ? "
+                + "WHERE id_cliente = ? AND activo = TRUE";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, puntos);
             ps.setInt(2, idCliente);
-            ps.executeUpdate();
+
+            if (ps.executeUpdate() == 0) {
+                throw new SQLException(
+                        "No se encontró un cliente activo para acreditar puntos.");
+            }
         }
     }
 
     @Override
-    public boolean restarPuntos(Connection con, int idCliente, int puntos) throws SQLException {
-        String sql = "UPDATE clientes SET puntos = puntos - ? WHERE id_cliente = ? AND activo = TRUE AND puntos >= ?";
+    public boolean restarPuntos(Connection con, int idCliente, int puntos)
+            throws SQLException {
+
+        String sql = "UPDATE clientes SET puntos = puntos - ? "
+                + "WHERE id_cliente = ? AND activo = TRUE AND puntos >= ?";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, puntos);
@@ -157,7 +193,9 @@ public class ClienteDAOImpl implements ClienteDAO {
         }
     }
 
-    private List<Cliente> consultar(String sql, Object... parametros) throws SQLException {
+    private List<Cliente> consultar(String sql, Object... parametros)
+            throws SQLException {
+
         List<Cliente> clientes = new ArrayList<>();
 
         try (Connection con = ConexionDB.getConexion();
@@ -190,6 +228,7 @@ public class ClienteDAOImpl implements ClienteDAO {
         cliente.setActivo(rs.getBoolean("activo"));
 
         Date fecha = rs.getDate("fecha_registro");
+
         if (fecha != null) {
             cliente.setFechaRegistro(fecha.toLocalDate());
         }
@@ -197,3 +236,4 @@ public class ClienteDAOImpl implements ClienteDAO {
         return cliente;
     }
 }
+    

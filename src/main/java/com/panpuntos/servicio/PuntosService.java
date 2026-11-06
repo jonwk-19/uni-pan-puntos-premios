@@ -1,3 +1,4 @@
+
 package com.panpuntos.servicio;
 
 import com.panpuntos.dao.impl.PuntosDAOImpl;
@@ -19,9 +20,7 @@ public class PuntosService {
 
     private final PuntosDAOImpl puntosDAO = new PuntosDAOImpl();
 
-    /**
-     * Acredita los puntos utilizando una transaccion propia.
-     */
+   
     public int acreditar(int idPedido) throws SQLException {
 
         if (idPedido <= 0) {
@@ -43,10 +42,7 @@ public class PuntosService {
         }
     }
 
-    /**
-     * Acredita puntos utilizando la conexion de una transaccion externa.
-     * No cierra, confirma ni cancela la conexion recibida.
-     */
+   
     public int acreditar(Connection con, Pedido pedido) throws SQLException {
 
         if (con == null) {
@@ -63,10 +59,7 @@ public class PuntosService {
         return puntos;
     }
 
-    /**
-     * Ejecuta la acreditacion dentro de la conexion recibida.
-     * No administra el commit ni el rollback.
-     */
+ 
     private int acreditarEnTransaccion(Connection con, int idPedido)
             throws SQLException {
 
@@ -98,12 +91,12 @@ public class PuntosService {
             }
         }
 
-        // 2. Solo se acreditan puntos a pedidos pagados.
+       
         if (!EstadoPedido.PAGADO.name().equals(estadoPedido)) {
             return 0;
         }
 
-        // 3. Verificar que exista un pago aprobado.
+     
         String sqlPago =
                 "SELECT COUNT(*) FROM pagos "
                 + "WHERE id_pedido = ? AND estado = ?";
@@ -121,7 +114,7 @@ public class PuntosService {
             }
         }
 
-        // 4. Evitar acreditar puntos dos veces.
+    
         String sqlDuplicado =
                 "SELECT COUNT(*) FROM movimientos_puntos "
                 + "WHERE id_pedido = ? AND tipo = 'ACUMULACION'";
@@ -138,7 +131,7 @@ public class PuntosService {
             }
         }
 
-        // 5. Obtener los puntos establecidos por las reglas del proyecto.
+      
         int puntosSandwich = new Sandwich().getPuntos();
         int puntosMenu = new Menu().getPuntos();
 
@@ -181,7 +174,7 @@ public class PuntosService {
             return 0;
         }
 
-        // 6. Acreditar los puntos al cliente activo.
+      
         String sqlCliente =
                 "UPDATE clientes SET puntos = puntos + ? "
                 + "WHERE id_cliente = ? AND activo = TRUE";
@@ -197,7 +190,7 @@ public class PuntosService {
             }
         }
 
-        // 7. Actualizar los puntos ganados en el pedido.
+
         String sqlActualizarPedido =
                 "UPDATE pedidos SET puntos_ganados = ? "
                 + "WHERE id_pedido = ? AND puntos_ganados = 0";
@@ -213,7 +206,6 @@ public class PuntosService {
             }
         }
 
-        // 8. Registrar el movimiento en el historial de puntos.
         MovimientoPuntos movimiento = new MovimientoPuntos();
 
         movimiento.setIdCliente(idCliente);
@@ -227,3 +219,4 @@ public class PuntosService {
         return puntos;
     }
 }
+ 

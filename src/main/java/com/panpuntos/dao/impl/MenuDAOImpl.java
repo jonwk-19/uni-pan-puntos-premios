@@ -1,3 +1,4 @@
+
 package com.panpuntos.dao.impl;
 
 import com.panpuntos.dao.MenuDAO;
@@ -40,15 +41,19 @@ public class MenuDAOImpl implements MenuDAO {
     @Override
     public List<Menu> listarActivos() throws SQLException {
         List<Menu> menus = new ArrayList<>();
-        String sql = SELECT_MENU + "WHERE m.activo = TRUE ORDER BY m.nombre";
+
+        String sql = SELECT_MENU
+                + "WHERE m.activo = TRUE ORDER BY m.nombre";
 
         try (Connection con = ConexionDB.getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
                 menus.add(mapear(rs));
             }
         }
+
         return menus;
     }
 
@@ -65,17 +70,20 @@ public class MenuDAOImpl implements MenuDAO {
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return mapear(rs);
                 }
             }
         }
+
         return null;
     }
 
     private Menu mapear(ResultSet rs) throws SQLException {
         Menu menu = new Menu();
+
         menu.setId(rs.getInt("id_menu"));
         menu.setCodigo(rs.getString("codigo"));
         menu.setNombre(rs.getString("nombre"));
@@ -89,17 +97,26 @@ public class MenuDAOImpl implements MenuDAO {
         if (sandwich.getCategoria() != Categoria.SANDWICH
                 || bebida.getCategoria() != Categoria.BEBIDA
                 || acompanamiento.getCategoria() != Categoria.ACOMPANAMIENTO) {
-            throw new SQLException("Los componentes del menu tienen categorias incorrectas.");
+
+            throw new SQLException(
+                    "Los componentes del menu tienen categorias incorrectas."
+            );
         }
 
         menu.setSandwich((Sandwich) sandwich);
         menu.setBebida((Bebida) bebida);
         menu.setAcompanamiento((Acompanamiento) acompanamiento);
+
         return menu;
     }
 
-    private Producto mapearProducto(ResultSet rs, String prefijo) throws SQLException {
-        Categoria categoria = Categoria.valueOf(rs.getString(prefijo + "_categoria"));
+    private Producto mapearProducto(ResultSet rs, String prefijo)
+            throws SQLException {
+
+        Categoria categoria = Categoria.valueOf(
+                rs.getString(prefijo + "_categoria")
+        );
+
         Producto producto = Producto.crear(categoria);
 
         producto.setId(rs.getInt(prefijo + "_id"));
