@@ -41,7 +41,6 @@ public class PagoService {
     private final InventarioDAO inventarioDAO = new InventarioDAOImpl();
     private final PuntosService puntosService = new PuntosService();
 
-    // Método anterior: se conserva para no romper otros usos.
     public Pago procesarPago(
             Pedido pedido,
             MetodoPago metodo,
@@ -50,7 +49,6 @@ public class PagoService {
         return procesarPago(pedido, metodo, montoRecibido, true);
     }
 
-    // Nuevo método con simulación de aprobación o rechazo de tarjeta.
     public Pago procesarPago(
             Pedido pedido,
             MetodoPago metodo,
@@ -73,7 +71,6 @@ public class PagoService {
 
             try {
 
-                // Bloquear el pedido para evitar pagos duplicados.
                 String sql = "SELECT id_cliente, estado, total "
                         + "FROM pedidos WHERE id_pedido = ? FOR UPDATE";
 
@@ -105,7 +102,6 @@ public class PagoService {
 
                 double total = pedido.getTotal();
 
-                // Validar efectivo.
                 if (metodo == MetodoPago.EFECTIVO) {
 
                     if (montoRecibido == null || montoRecibido < total) {
@@ -118,7 +114,6 @@ public class PagoService {
                     montoRecibido = null;
                 }
 
-                // Preparar el registro del pago.
                 Pago pago = new Pago();
 
                 pago.setIdPedido(pedido.getId());
@@ -145,8 +140,6 @@ public class PagoService {
                     );
                 }
 
-                // Si la tarjeta es rechazada, registrar solamente
-                // el intento de pago. No tocar inventario ni puntos.
                 if (pago.getEstado() == EstadoPago.RECHAZADO) {
 
                     pagoDAO.registrar(con, pago);
@@ -158,8 +151,6 @@ public class PagoService {
                     return pago;
                 }
 
-                // A partir de aquí el pago está aprobado.
-                // Descontar inventario y registrar movimientos.
                 for (DetallePedido detalle : pedido.getDetalles()) {
 
                     if (detalle.getCantidad() <= 0) {
@@ -178,7 +169,6 @@ public class PagoService {
 
                     } else if (detalle.getIdMenu() != null) {
 
-                        // Buscar el menú usando la misma conexión.
                         Menu menu = menuDAO.buscarPorId(
                                 con,
                                 detalle.getIdMenu()
@@ -211,10 +201,8 @@ public class PagoService {
                     }
                 }
 
-                // Registrar el pago aprobado.
                 pagoDAO.registrar(con, pago);
 
-                // Cambiar el estado del pedido.
                 pedidoDAO.actualizarEstado(
                         con,
                         pedido.getId(),
@@ -223,11 +211,8 @@ public class PagoService {
 
                 pedido.setEstado(EstadoPedido.PAGADO);
 
-                // Acreditar puntos dentro de la misma transacción.
-                // PuntosService también actualiza pedidos.puntos_ganados.
                 puntosService.acreditar(con, pedido);
 
-                // Confirmar todos los cambios juntos.
                 con.commit();
 
                 return pago;
