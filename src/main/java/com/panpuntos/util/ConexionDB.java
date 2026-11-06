@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class ConexionDB {
     private static final String URL = "jdbc:mysql://localhost:3306/pan_puntos?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     private static final String USUARIO = "root";
-    private static final String CLAVE = "root";
+    private static final String CLAVE = "NuevaClaveSegura_2026!";
 
     static {
         try {
@@ -20,4 +20,4 @@ public class ConexionDB {
     public static Connection getConexion() throws SQLException {
         return DriverManager.getConnection(URL, USUARIO, CLAVE);
     }
-}
+} 
