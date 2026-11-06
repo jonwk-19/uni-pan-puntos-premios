@@ -9,7 +9,7 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     private val client = OkHttpClient()
-    private val urlBase = "http://localhost:8080/api/puntos"
+  private val urlBase = "http://10.0.2.2:8080/pan-puntos/api/puntos" 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
