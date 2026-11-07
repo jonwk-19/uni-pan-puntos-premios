@@ -5,19 +5,17 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConexionDB {
-    private static final String URL = "jdbc:mysql://localhost:3306/pan_puntos?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
-    private static final String USUARIO = "root";
-    private static final String CLAVE = "NuevaClaveSegura_2026!";
+    private static final String URL = valor("DB_URL",
+            "jdbc:mysql://localhost:3306/pan_puntos?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC");
+    private static final String USUARIO = valor("DB_USER", "root");
+    private static final String CLAVE = valor("DB_PASSWORD", "root");
 
-    static {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new ExceptionInInitializerError(e);
-        }
+    private static String valor(String nombre, String porDefecto) {
+        String variable = System.getenv(nombre);
+        return variable == null || variable.isBlank() ? porDefecto : variable;
     }
 
     public static Connection getConexion() throws SQLException {
         return DriverManager.getConnection(URL, USUARIO, CLAVE);
     }
-} 
+}
