@@ -12,7 +12,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class InventarioDAOImpl implements InventarioDAO {
 
     private static final String SELECT =

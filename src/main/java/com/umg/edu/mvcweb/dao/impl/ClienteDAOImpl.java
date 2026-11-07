@@ -14,7 +14,9 @@ import java.sql.Types;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ClienteDAOImpl implements ClienteDAO {
 
     private static final String SELECT =
