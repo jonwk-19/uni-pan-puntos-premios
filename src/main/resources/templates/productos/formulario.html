@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/layout :: cabecera('Producto')}"></head>
+<body>
+<nav th:replace="~{fragmentos/layout :: menu}"></nav>
+
+<main class="container my-4">
+    <h1 class="h3 mb-3" th:text="${editando} ? 'Editar producto' : 'Nuevo producto'"></h1>
+
+    <div th:replace="~{fragmentos/layout :: mensajes}"></div>
+
+    <form class="card card-body" method="post" th:object="${productoForm}"
+          th:action="${editando} ? @{/productos/actualizar} : @{/productos/guardar}">
+
+        <input type="hidden" th:field="*{id}">
+
+        <div class="mb-3">
+            <label class="form-label" for="codigo">Codigo</label>
+            <input type="text" class="form-control" id="codigo" th:field="*{codigo}" maxlength="20" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="categoria">Categoria</label>
+            <select class="form-select" id="categoria" th:field="*{categoria}" th:disabled="${editando}">
+                <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat.etiqueta}"></option>
+            </select>
+            <input type="hidden" name="categoria" th:if="${editando}" th:value="*{categoria}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="nombre">Nombre</label>
+            <input type="text" class="form-control" id="nombre" th:field="*{nombre}" maxlength="100" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="precio">Precio</label>
+            <input type="number" class="form-control" id="precio" th:field="*{precio}" min="0" step="0.01" required>
+        </div>
+
+        <div class="mb-3" th:unless="${editando}">
+            <label class="form-label" for="existencia">Existencia inicial</label>
+            <input type="number" class="form-control" id="existencia" th:field="*{existencia}" min="0" required>
+        </div>
+
+        <p class="text-muted" th:if="${editando}">
+            Existencia actual: <span th:text="*{existencia}"></span>. Para agregar unidades usa la pantalla de inventario.
+        </p>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-marca">Guardar</button>
+            <a class="btn btn-secondary" th:href="@{/productos}">Cancelar</a>
+        </div>
+    </form>
+</main>
+
+<script th:replace="~{fragmentos/layout :: scripts}"></script>
+</body>
+</html>
