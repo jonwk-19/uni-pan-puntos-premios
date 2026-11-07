@@ -1,0 +1,119 @@
+
+package com.umg.edu.mvcweb.controlador;
+
+import com.umg.edu.mvcweb.modelo.MetodoPago;
+import com.umg.edu.mvcweb.modelo.Pedido;
+import com.umg.edu.mvcweb.modelo.Pago;
+import com.umg.edu.mvcweb.modelo.EstadoPago;
+import com.umg.edu.mvcweb.servicio.PagoService;
+import com.umg.edu.mvcweb.servicio.PedidoService;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.sql.SQLException;
+
+@WebServlet("/pagos")
+public class PagoServlet extends ControladorBase {
+
+    private final PagoService pagoService = new PagoService();
+    private final PedidoService pedidoService = new PedidoService();
+
+    @Override
+    protected void doGet(
+            HttpServletRequest req,
+            HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        try {
+
+            int idPedido = Integer.parseInt(req.getParameter("id"));
+
+            Pedido pedido = pedidoService.buscarPorId(idPedido);
+
+            if (pedido == null) {
+                mostrarError(req, resp, "No se encontró el pedido.");
+                return;
+            }
+
+            req.setAttribute("pedido", pedido);
+            req.setAttribute("metodos", MetodoPago.values());
+
+            irA(req, resp, "pagos/formulario");
+
+        } catch (NumberFormatException e) {
+
+            mostrarError(req, resp, "El número de pedido no es válido.");
+
+        } catch (SQLException e) {
+
+            mostrarError(req, resp, "Error al consultar el pedido: " + e.getMessage());
+        }
+    }
+
+    @Override
+    protected void doPost(
+            HttpServletRequest req,
+            HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        try {
+
+            int idPedido = Integer.parseInt(req.getParameter("idPedido"));
+
+            MetodoPago metodo = MetodoPago.valueOf(
+                    req.getParameter("metodo")
+            );
+
+            Double montoRecibido = null;
+            boolean tarjetaAprobada = false;
+
+            if (metodo == MetodoPago.EFECTIVO) {
+
+                montoRecibido = Double.parseDouble(
+                        req.getParameter("montoRecibido").replace(',', '.')
+                );
+
+            } else if (metodo == MetodoPago.TARJETA) {
+
+                tarjetaAprobada = Boolean.parseBoolean(
+                        req.getParameter("tarjetaAprobada")
+                );
+            }
+
+            Pedido pedido = pedidoService.buscarPorId(idPedido);
+
+            if (pedido == null) {
+                mostrarError(req, resp, "No se encontró el pedido.");
+                return;
+            }
+
+            Pago pago = pagoService.procesarPago(
+                    pedido,
+                    metodo,
+                    montoRecibido,
+                    tarjetaAprobada
+            );
+
+            req.setAttribute("pago", pago);
+            req.setAttribute("pedido", pedido);
+
+            irA(req, resp, "pagos/comprobante");
+
+        } catch (NumberFormatException | NullPointerException e) {
+
+            mostrarError(req, resp, "Verifica los datos ingresados.");
+
+        } catch (IllegalArgumentException e) {
+
+            mostrarError(req, resp, e.getMessage());
+
+        } catch (SQLException e) {
+
+            mostrarError(req, resp, "No se pudo procesar el pago: " + e.getMessage());
+        }
+    }
+}
