@@ -16,3 +16,5 @@ local.properties
 
 /target/
 /.vscode/
+/.idea/
+nb-configuration.xml

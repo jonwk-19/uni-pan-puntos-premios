@@ -1,0 +1,30 @@
+body {
+    background-color: #f6f3ee;
+}
+
+.bg-marca {
+    background-color: #7a3e1d;
+}
+
+.btn-marca {
+    background-color: #7a3e1d;
+    border-color: #7a3e1d;
+    color: #fff;
+}
+
+.btn-marca:hover {
+    background-color: #5f2f15;
+    border-color: #5f2f15;
+    color: #fff;
+}
+
+.tarjeta-modulo {
+    text-decoration: none;
+    color: #7a3e1d;
+    font-weight: bold;
+}
+
+.tarjeta-modulo:hover {
+    background-color: #efe7da;
+    color: #5f2f15;
+}

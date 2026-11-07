@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/layout :: cabecera('Inventario')}"></head>
+<body>
+<nav th:replace="~{fragmentos/layout :: menu}"></nav>
+
+<main class="container my-4">
+    <h1 class="h3 mb-3">Inventario</h1>
+
+    <div th:replace="~{fragmentos/layout :: mensajes}"></div>
+
+    <div class="card card-body mb-4">
+        <h2 class="h5">Registrar entrada</h2>
+        <form class="row g-3 align-items-end" method="post" th:action="@{/inventario/abastecer}">
+            <div class="col-md-6">
+                <label class="form-label" for="idProducto">Producto</label>
+                <select class="form-select" id="idProducto" name="idProducto" required>
+                    <th:block th:each="p : ${productos}">
+                        <option th:if="${p.activo}"
+                                th:value="${p.id}"
+                                th:selected="${p.id == seleccionado}"
+                                th:text="${p.codigo} + ' - ' + ${p.nombre} + ' (existencia: ' + ${p.existencia} + ')'"></option>
+                    </th:block>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="cantidad">Cantidad</label>
+                <input type="number" class="form-control" id="cantidad" name="cantidad" min="1" required>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-marca">Registrar entrada</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="h5 mb-0">Historial de movimientos</h2>
+        <a class="btn btn-sm btn-outline-secondary" th:if="${seleccionado != null}" th:href="@{/inventario}">
+            Ver todos los productos
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle bg-white">
+            <thead class="table-light">
+            <tr>
+                <th>Fecha</th>
+                <th>Producto</th>
+                <th>Tipo</th>
+                <th class="text-end">Cantidad</th>
+                <th>Pedido</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="m : ${movimientos}">
+                <td th:text="${m.fechaTexto}"></td>
+                <td th:text="${m.nombreProducto}"></td>
+                <td>
+                    <span class="badge" th:classappend="${m.tipo.name() == 'ENTRADA'} ? 'bg-success' : 'bg-warning text-dark'"
+                          th:text="${m.tipo}"></span>
+                </td>
+                <td class="text-end" th:text="${m.cantidad}"></td>
+                <td th:text="${m.idPedido != null} ? ${m.idPedido} : '-'"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(movimientos)}">
+                <td colspan="5" class="text-center text-muted">Sin movimientos registrados.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script th:replace="~{fragmentos/layout :: scripts}"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/layout :: cabecera('Error')}"></head>
+<body>
+<nav th:replace="~{fragmentos/layout :: menu}"></nav>
+
+<main class="container my-4">
+    <h1 class="h3 mb-3">Ocurrio un problema</h1>
+    <div th:replace="~{fragmentos/layout :: mensajes}"></div>
+    <a class="btn btn-secondary" href="javascript:history.back()">Volver</a>
+</main>
+
+<script th:replace="~{fragmentos/layout :: scripts}"></script>
+</body>
+</html>

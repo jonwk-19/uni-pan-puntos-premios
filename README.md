@@ -1,13 +1,12 @@
 # Pan, Puntos y Premios
 
-Proyecto universitario: sistema web de pedidos y fidelizacion de puntos para un restaurante de sandwiches. Java con patron MVC (servlets y JSP), MySQL y JDBC.
+Proyecto universitario: sistema web de pedidos y fidelizacion de puntos para un restaurante de sandwiches. Java con Spring Boot (patron MVC), vistas en HTML con Thymeleaf y Bootstrap, MySQL y JDBC.
 
 ## Requisitos
 
 - Java 17
 - Maven 3.8+
 - MySQL 8
-- Tomcat 10.1 (jakarta.servlet)
 
 ## Base de datos
 
@@ -18,33 +17,61 @@ mysql -u root -p < db/schema.sql
 mysql -u root -p < db/datos.sql
 ```
 
-El primer script crea la base `pan_puntos` con sus tablas y el segundo carga datos de prueba (clientes, productos, menus, recompensas y pedidos pagados de ejemplo).
+El primer script crea la base `pan_puntos` con sus tablas (borra la base si ya existia) y el segundo carga datos de prueba.
 
-La conexion se configura en `src/main/java/com/panpuntos/util/ConexionDB.java` (`URL`, `USUARIO` y `CLAVE`).
+## Conexion
 
-## Compilar y ejecutar
+`ConexionDB` lee estas variables de entorno. Si no existen usa los valores por defecto:
+
+| Variable | Por defecto |
+|----------|-------------|
+| DB_URL | jdbc:mysql://localhost:3306/pan_puntos?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC |
+| DB_USER | root |
+| DB_PASSWORD | root |
+
+La clave de cada quien se configura en su maquina, no en el codigo.
+
+## Ejecutar
 
 ```bash
-mvn clean package
+mvn spring-boot:run
 ```
 
-Copiar `target/pan-puntos.war` a la carpeta `webapps` de Tomcat, o desplegarlo desde el IDE, y abrir `http://localhost:8080/pan-puntos/`.
+La aplicacion queda en `http://localhost:8080/pan-puntos/`.
 
 ## Estructura
 
 ```
-src/main/java/com/panpuntos
-    modelo        entidades y enumeraciones
+src/main/java/com/umg/edu/mvcweb
+    controller    controladores (@Controller)
+    form          objetos para enlazar formularios
+    servicio      logica de negocio
     dao           interfaces de acceso a datos
     dao/impl      implementaciones JDBC con PreparedStatement
-    servicio      logica de negocio
-    controlador   servlets
-    filtro        filtros web
+    modelo        entidades y enumeraciones
     excepcion     excepciones de negocio
     util          conexion a la base de datos
-src/main/webapp/WEB-INF/vista    paginas JSP
+src/main/resources/templates     vistas HTML (Thymeleaf)
+src/main/resources/static        estilos propios
 db                               scripts SQL
+app                              aplicacion Android
 ```
+
+## Como migrar un modulo
+
+Productos e inventario ya estan migrados y sirven de ejemplo (`ProductoController` y `templates/productos`).
+
+1. Crear `XController` en `controller` con `@Controller` y recibir el servicio con `@Autowired`.
+2. Cada metodo devuelve el nombre de la vista (`"clientes/lista"`) o `"redirect:/clientes"`.
+3. Crear las plantillas en `templates/<modulo>` usando los fragmentos de `fragmentos/layout.html` (`cabecera`, `menu`, `mensajes` y `scripts`).
+4. Para avisar al usuario despues de guardar, usar `RedirectAttributes.addFlashAttribute("mensaje", ...)`.
+5. Los errores de negocio y de base de datos los atiende `ManejadorErrores`; solo hay que dejar pasar las excepciones.
+
+Pendientes de migrar: clientes, pedidos, pagos, recompensas y reportes. Los servicios, DAO y modelos de esos modulos ya funcionan y estan registrados como beans, solo falta su controlador y sus vistas.
+
+## API para Android
+
+`GET /pan-puntos/api/puntos?documento=XXXX` responde `{"documento", "nombre", "puntos"}`.
 
 ## Ramas
 
@@ -53,7 +80,7 @@ db                               scripts SQL
 | feature/productos-inventario | Productos e inventario |
 | feature/clientes-fidelizacion | Clientes y fidelizacion |
 | feature/pedidos-pagos | Pedidos y pagos |
-| feature/reportes-android | Reportes, Android y entregables |
+| feature/reportes-android | Reportes y Android |
 
 ## Convencion de commits
 
