@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/layout :: cabecera('Productos')}"></head>
+<body>
+<nav th:replace="~{fragmentos/layout :: menu}"></nav>
+
+<main class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Productos</h1>
+        <a class="btn btn-marca" th:href="@{/productos/nuevo}">Nuevo producto</a>
+    </div>
+
+    <div th:replace="~{fragmentos/layout :: mensajes}"></div>
+
+    <form class="row g-2 mb-3" method="get" th:action="@{/productos}">
+        <div class="col-auto">
+            <select class="form-select" name="categoria" onchange="this.form.submit()">
+                <option value="">Todas las categorias</option>
+                <option th:each="cat : ${categorias}"
+                        th:value="${cat}"
+                        th:text="${cat.etiqueta}"
+                        th:selected="${cat == filtro}"></option>
+            </select>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle bg-white">
+            <thead class="table-light">
+            <tr>
+                <th>Codigo</th>
+                <th>Categoria</th>
+                <th>Nombre</th>
+                <th class="text-end">Precio</th>
+                <th class="text-end">Existencia</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${productos}" th:classappend="${!p.activo} ? 'table-secondary text-muted'">
+                <td th:text="${p.codigo}"></td>
+                <td th:text="${p.categoria.etiqueta}"></td>
+                <td th:text="${p.nombre}"></td>
+                <td class="text-end" th:text="'$' + ${#numbers.formatDecimal(p.precio, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td class="text-end" th:text="${p.existencia}"></td>
+                <td>
+                    <span class="badge" th:classappend="${p.activo} ? 'bg-success' : 'bg-secondary'"
+                          th:text="${p.activo} ? 'Activo' : 'Desactivado'"></span>
+                </td>
+                <td>
+                    <div class="d-flex flex-wrap gap-1">
+                        <a class="btn btn-sm btn-outline-primary" th:href="@{/productos/editar/{id}(id=${p.id})}">Editar</a>
+                        <a class="btn btn-sm btn-outline-secondary" th:href="@{/inventario(id=${p.id})}">Inventario</a>
+                        <form method="post" th:action="@{/productos/estado/{id}(id=${p.id})}">
+                            <input type="hidden" name="activo" th:value="${!p.activo}">
+                            <button type="submit" class="btn btn-sm btn-outline-dark"
+                                    th:text="${p.activo} ? 'Desactivar' : 'Activar'"></button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(productos)}">
+                <td colspan="7" class="text-center text-muted">No hay productos registrados.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script th:replace="~{fragmentos/layout :: scripts}"></script>
+</body>
+</html>
