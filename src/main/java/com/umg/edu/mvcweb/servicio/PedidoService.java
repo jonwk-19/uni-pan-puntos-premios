@@ -10,7 +10,9 @@ import com.umg.edu.mvcweb.util.ConexionDB;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PedidoService {
 
     private final PedidoDAO pedidoDAO = new PedidoDAOImpl();
