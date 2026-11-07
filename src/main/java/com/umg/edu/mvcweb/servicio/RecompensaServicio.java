@@ -61,7 +61,6 @@ public class RecompensaServicio {
                     return false;
                 }
 
-                // Descontar y validar el producto o menu.
                 if (recompensa.getIdProducto() != null) {
 
                     descontarProducto(
@@ -82,7 +81,6 @@ public class RecompensaServicio {
                     );
                 }
 
-           
                 String sqlDescuento =
                         "UPDATE clientes SET puntos = puntos - ? "
                         + "WHERE id_cliente = ? "
@@ -102,7 +100,6 @@ public class RecompensaServicio {
                     }
                 }
 
-            
                 MovimientoPuntos movimiento = new MovimientoPuntos();
                 movimiento.setIdCliente(idCliente);
                 movimiento.setPuntos(-costo);
@@ -205,7 +202,6 @@ public class RecompensaServicio {
     private void descontarMenu(
             Connection con, int idMenu) throws SQLException {
 
-        // Bloquear y validar el menu.
         String sql =
                 "SELECT activo FROM menus "
                 + "WHERE id_menu = ? FOR UPDATE";
@@ -232,7 +228,6 @@ public class RecompensaServicio {
             );
         }
 
-      
         for (Producto componente : menu.getComponentes()) {
             descontarProducto(con, componente.getId());
         }

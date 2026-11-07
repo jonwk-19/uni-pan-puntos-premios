@@ -1,4 +1,3 @@
-
 package com.umg.edu.mvcweb.dao.impl;
 
 import com.umg.edu.mvcweb.dao.PuntosDAO;

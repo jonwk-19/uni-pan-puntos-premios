@@ -1,4 +1,3 @@
-
 package com.umg.edu.mvcweb.dao;
 
 import com.umg.edu.mvcweb.modelo.Menu;

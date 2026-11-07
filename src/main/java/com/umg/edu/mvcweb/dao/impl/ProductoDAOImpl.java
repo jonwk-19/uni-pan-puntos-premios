@@ -1,4 +1,3 @@
-
 package com.umg.edu.mvcweb.dao.impl;
 
 import com.umg.edu.mvcweb.dao.ProductoDAO;
@@ -223,4 +222,3 @@ public class ProductoDAOImpl implements ProductoDAO {
         return p;
     }
 }
-  

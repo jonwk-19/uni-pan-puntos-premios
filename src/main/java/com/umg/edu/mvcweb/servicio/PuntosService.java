@@ -1,4 +1,3 @@
-
 package com.umg.edu.mvcweb.servicio;
 
 import com.umg.edu.mvcweb.dao.impl.PuntosDAOImpl;
@@ -22,7 +21,6 @@ public class PuntosService {
 
     private final PuntosDAOImpl puntosDAO = new PuntosDAOImpl();
 
-   
     public int acreditar(int idPedido) throws SQLException {
 
         if (idPedido <= 0) {
@@ -44,7 +42,6 @@ public class PuntosService {
         }
     }
 
-   
     public int acreditar(Connection con, Pedido pedido) throws SQLException {
 
         if (con == null) {
@@ -61,7 +58,6 @@ public class PuntosService {
         return puntos;
     }
 
- 
     private int acreditarEnTransaccion(Connection con, int idPedido)
             throws SQLException {
 
@@ -69,7 +65,6 @@ public class PuntosService {
         int puntosGanados;
         String estadoPedido;
 
-        // 1. Consultar y bloquear el pedido.
         String sqlPedido =
                 "SELECT id_cliente, puntos_ganados, estado "
                 + "FROM pedidos WHERE id_pedido = ? FOR UPDATE";
@@ -93,12 +88,10 @@ public class PuntosService {
             }
         }
 
-       
         if (!EstadoPedido.PAGADO.name().equals(estadoPedido)) {
             return 0;
         }
 
-     
         String sqlPago =
                 "SELECT COUNT(*) FROM pagos "
                 + "WHERE id_pedido = ? AND estado = ?";
@@ -116,7 +109,6 @@ public class PuntosService {
             }
         }
 
-    
         String sqlDuplicado =
                 "SELECT COUNT(*) FROM movimientos_puntos "
                 + "WHERE id_pedido = ? AND tipo = 'ACUMULACION'";
@@ -133,7 +125,6 @@ public class PuntosService {
             }
         }
 
-      
         int puntosSandwich = new Sandwich().getPuntos();
         int puntosMenu = new Menu().getPuntos();
 
@@ -176,7 +167,6 @@ public class PuntosService {
             return 0;
         }
 
-      
         String sqlCliente =
                 "UPDATE clientes SET puntos = puntos + ? "
                 + "WHERE id_cliente = ? AND activo = TRUE";
@@ -191,7 +181,6 @@ public class PuntosService {
                 );
             }
         }
-
 
         String sqlActualizarPedido =
                 "UPDATE pedidos SET puntos_ganados = ? "
@@ -221,4 +210,3 @@ public class PuntosService {
         return puntos;
     }
 }
- 
