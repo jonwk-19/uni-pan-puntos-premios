@@ -16,6 +16,12 @@ public class ClienteServicio {
         return clienteDAO.listar();
     }
 
+    public List<Cliente> listarActivos() throws SQLException {
+        return clienteDAO.listar().stream()
+                .filter(Cliente::isActivo)
+                .toList();
+    }
+
     public List<Cliente> buscarPorNombre(String texto) throws SQLException {
         if (texto == null || texto.isBlank()) {
             return clienteDAO.listar();
