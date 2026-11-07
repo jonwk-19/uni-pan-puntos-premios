@@ -2,8 +2,6 @@ package com.umg.edu.mvcweb.servicio;
 
 import com.umg.edu.mvcweb.dao.InventarioDAO;
 import com.umg.edu.mvcweb.dao.ProductoDAO;
-import com.umg.edu.mvcweb.dao.impl.InventarioDAOImpl;
-import com.umg.edu.mvcweb.dao.impl.ProductoDAOImpl;
 import com.umg.edu.mvcweb.excepcion.NegocioException;
 import com.umg.edu.mvcweb.excepcion.StockInsuficienteException;
 import com.umg.edu.mvcweb.modelo.Categoria;
@@ -12,15 +10,21 @@ import com.umg.edu.mvcweb.modelo.Producto;
 import com.umg.edu.mvcweb.modelo.TipoMovimientoInventario;
 import com.umg.edu.mvcweb.util.ConexionDB;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ProductoServicio {
-    private final ProductoDAO productoDAO = new ProductoDAOImpl();
-    private final InventarioDAO inventarioDAO = new InventarioDAOImpl();
+
+    @Autowired
+    private ProductoDAO productoDAO;
+
+    @Autowired
+    private InventarioDAO inventarioDAO;
 
     public List<Producto> listar() throws SQLException {
         return productoDAO.listar();
