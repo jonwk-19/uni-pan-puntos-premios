@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/layout :: cabecera('Detalle del pedido')}"></head>
+<body>
+<nav th:replace="~{fragmentos/layout :: menu}"></nav>
+
+<main class="container my-4">
+    <h1 class="h3 mb-3">Detalle del pedido <span th:text="'#' + ${pedido.id}"></span></h1>
+
+    <div class="card card-body mb-4">
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Cliente:</strong>
+                    <span th:text="${cliente != null} ? ${cliente.nombreCompleto} : 'Sin cliente'"></span>
+                </p>
+                <p class="mb-1"><strong>Fecha:</strong>
+                    <span th:text="${#temporals.format(pedido.fecha, 'dd/MM/yyyy HH:mm')}"></span>
+                </p>
+                <p class="mb-0"><strong>Estado:</strong>
+                    <span th:text="${pedido.estado}"></span>
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Total:</strong>
+                    <span th:text="'Q' + ${#numbers.formatDecimal(pedido.total, 1, 'COMMA', 2, 'POINT')}"></span>
+                </p>
+                <p class="mb-0"><strong>Puntos ganados:</strong>
+                    <span th:text="${pedido.puntosGanados}"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle bg-white">
+            <thead class="table-light">
+            <tr>
+                <th>Producto o menu</th>
+                <th class="text-end">Cantidad</th>
+                <th class="text-end">Precio unitario</th>
+                <th class="text-end">Subtotal</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="d : ${pedido.detalles}">
+                <td th:text="${d.nombre}"></td>
+                <td class="text-end" th:text="${d.cantidad}"></td>
+                <td class="text-end" th:text="'Q' + ${#numbers.formatDecimal(d.precioUnitario, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td class="text-end" th:text="'Q' + ${#numbers.formatDecimal(d.subtotal, 1, 'COMMA', 2, 'POINT')}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a class="btn btn-secondary" th:href="@{/pedidos}">Volver a pedidos</a>
+</main>
+
+<script th:replace="~{fragmentos/layout :: scripts}"></script>
+</body>
+</html>
