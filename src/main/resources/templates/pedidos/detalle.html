@@ -1,0 +1,136 @@
+```html
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del pedido</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f1e8;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .contenedor {
+            max-width: 850px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: #713f12;
+        }
+
+        .informacion {
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #713f12;
+            color: white;
+        }
+
+        .total {
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .boton {
+            display: inline-block;
+            padding: 10px 18px;
+            background: #713f12;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="contenedor">
+
+    <h1>Detalle del pedido</h1>
+
+    <div class="informacion">
+        <p>
+            <strong>Número de pedido:</strong>
+            <span th:text="${pedido.id}"></span>
+        </p>
+
+        <p>
+            <strong>Cliente:</strong>
+            <span th:if="${cliente != null}"
+                  th:text="${cliente.nombreCompleto}"></span>
+            <span th:if="${cliente == null}">Sin cliente asociado</span>
+        </p>
+
+        <p>
+            <strong>Fecha:</strong>
+            <span th:text="${pedido.fecha != null ? #temporals.format(pedido.fecha, 'dd/MM/yyyy HH:mm') : 'No disponible'}"></span>
+        </p>
+
+        <p>
+            <strong>Estado:</strong>
+            <span th:text="${pedido.estado}"></span>
+        </p>
+    </div>
+
+    <h2>Artículos del pedido</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Artículo</th>
+                <th>Cantidad</th>
+                <th>Precio unitario</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr th:each="detalle : ${pedido.detalles}">
+                <td th:text="${detalle.nombre}"></td>
+                <td th:text="${detalle.cantidad}"></td>
+                <td th:text="${#numbers.formatDecimal(detalle.precioUnitario, 1, 2)}"></td>
+                <td th:text="${#numbers.formatDecimal(detalle.subtotal, 1, 2)}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="total">
+        Total:
+        Q<span th:text="${#numbers.formatDecimal(pedido.total, 1, 2)}"></span>
+    </div>
+
+    <p>
+        <strong>Puntos ganados:</strong>
+        <span th:text="${pedido.puntosGanados}"></span>
+    </p>
+
+    <a th:href="@{/pedidos}" class="boton">Volver a pedidos</a>
+
+</div>
+
+</body>
+</html>
+```

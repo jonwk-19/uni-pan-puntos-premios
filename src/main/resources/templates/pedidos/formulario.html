@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo pedido</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f1e8;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .contenedor {
+            max-width: 850px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        h1 {
+            color: #754c24;
+        }
+
+        .fila {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        select, input {
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .articulo {
+            flex: 1;
+        }
+
+        .cantidad {
+            width: 90px;
+        }
+
+        button, .volver {
+            padding: 11px 17px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .guardar {
+            background: #754c24;
+            color: white;
+        }
+
+        .agregar {
+            background: #287a45;
+            color: white;
+        }
+
+        .eliminar {
+            background: #b83232;
+            color: white;
+        }
+
+        .volver {
+            background: #777;
+            color: white;
+        }
+
+        .error {
+            background: #ffe0e0;
+            color: #a00000;
+            padding: 12px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="contenedor">
+
+    <h1>Registrar nuevo pedido</h1>
+
+    <p>Selecciona el cliente y los productos o menús que deseas agregar.</p>
+
+    <div class="error" th:if="${error}" th:text="${error}"></div>
+
+    <form th:action="@{/pedidos/crear}" method="post">
+
+        <label for="idCliente"><strong>Cliente:</strong></label>
+
+        <select id="idCliente" name="idCliente" required style="width: 100%; margin: 10px 0 25px;">
+            <option value="">Selecciona un cliente</option>
+            <option th:each="cliente : ${clientes}"
+                    th:value="${cliente.id}"
+                    th:text="${cliente.nombreCompleto}">
+            </option>
+        </select>
+
+        <h3>Artículos del pedido</h3>
+
+        <div id="articulos">
+
+            <div class="fila articulo-fila">
+
+                <select name="articulo" class="articulo" required>
+                    <option value="">Selecciona un producto o menú</option>
+
+                    <optgroup label="Productos">
+                        <option th:each="producto : ${productos}"
+                                th:if="${producto.activo}"
+                                th:value="${'P:' + producto.id}"
+                                th:text="${producto.nombre + ' - Q' + producto.precio}">
+                        </option>
+                    </optgroup>
+
+                    <optgroup label="Menús">
+                        <option th:each="menu : ${menus}"
+                                th:value="${'M:' + menu.id}"
+                                th:text="${menu.nombre + ' - Q' + menu.precio}">
+                        </option>
+                    </optgroup>
+                </select>
+
+                <input type="number"
+                       name="cantidad"
+                       class="cantidad"
+                       min="1"
+                       value="1"
+                       required>
+
+                <button type="button" class="eliminar" onclick="eliminarArticulo(this)">
+                    Quitar
+                </button>
+
+            </div>
+
+        </div>
+
+        <button type="button" class="agregar" onclick="agregarArticulo()">
+            Agregar otro artículo
+        </button>
+
+        <br>
+
+        <button type="submit" class="guardar">
+            Registrar pedido
+        </button>
+
+        <a th:href="@{/pedidos}" class="volver">Volver</a>
+
+    </form>
+
+</div>
+
+<script>
+    function agregarArticulo() {
+        const contenedor = document.getElementById("articulos");
+        const original = document.querySelector(".articulo-fila");
+        const nueva = original.cloneNode(true);
+
+        nueva.querySelector("select").value = "";
+        nueva.querySelector("input").value = "1";
+
+        contenedor.appendChild(nueva);
+    }
+
+    function eliminarArticulo(boton) {
+        const filas = document.querySelectorAll(".articulo-fila");
+
+        if (filas.length > 1) {
+            boton.closest(".articulo-fila").remove();
+        }
+        else {
+            alert("El pedido debe tener al menos un artículo.");
+        }
+    }
+</script>
+
+</body>
+</html>
