@@ -59,7 +59,7 @@ app                              aplicacion Android
 
 ## Como migrar un modulo
 
-Productos e inventario ya estan migrados y sirven de ejemplo (`ProductoController` y `templates/productos`).
+Productos, inventario y pedidos ya estan migrados y sirven de ejemplo (`ProductoController`, `PedidoController` y `templates/productos`, `templates/pedidos`).
 
 1. Crear `XController` en `controller` con `@Controller` y recibir el servicio con `@Autowired`.
 2. Cada metodo devuelve el nombre de la vista (`"clientes/lista"`) o `"redirect:/clientes"`.
@@ -67,7 +67,7 @@ Productos e inventario ya estan migrados y sirven de ejemplo (`ProductoControlle
 4. Para avisar al usuario despues de guardar, usar `RedirectAttributes.addFlashAttribute("mensaje", ...)`.
 5. Los errores de negocio y de base de datos los atiende `ManejadorErrores`; solo hay que dejar pasar las excepciones.
 
-Pendientes de migrar: clientes, pedidos, pagos, recompensas y reportes. Los servicios, DAO y modelos de esos modulos ya funcionan y estan registrados como beans, solo falta su controlador y sus vistas.
+Pendientes de migrar: clientes, pagos, recompensas y reportes. El boton de pagar de la lista de pedidos ya apunta a `/pagos?id=<id del pedido>`. Los servicios, DAO y modelos de esos modulos ya funcionan y estan registrados como beans, solo falta su controlador y sus vistas.
 
 ## API para Android
 
