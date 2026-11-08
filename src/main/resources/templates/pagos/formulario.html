@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragmentos/layout :: cabecera('Procesar pago')}"></head>
+
+<body>
+
+<nav th:replace="~{fragmentos/layout :: menu}"></nav>
+
+<main class="container my-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Procesar pago</h1>
+
+        <a class="btn btn-outline-secondary" th:href="@{/pedidos}">
+            Volver a pedidos
+        </a>
+    </div>
+
+    <div th:replace="~{fragmentos/layout :: mensajes}"></div>
+
+    <div class="card shadow-sm" th:if="${pedido != null}">
+
+        <div class="card-header">
+            <h2 class="h5 mb-0">Información del pedido</h2>
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                <strong>Número de pedido:</strong>
+                <span th:text="${pedido.id}"></span>
+            </p>
+
+            <p>
+                <strong>Total a pagar:</strong>
+                <span th:text="'Q' + ${#numbers.formatDecimal(pedido.total, 1, 'COMMA', 2, 'POINT')}"></span>
+            </p>
+
+            <hr>
+
+            <form th:action="@{/pagos/procesar}" method="post">
+
+                <input type="hidden"
+                       name="idPedido"
+                       th:value="${pedido.id}">
+
+                <!-- METODO DE PAGO -->
+
+                <div class="mb-3">
+
+                    <label for="metodo" class="form-label">
+                        Método de pago
+                    </label>
+
+                    <select id="metodo"
+                            name="metodo"
+                            class="form-select"
+                            required>
+
+                        <option value="">Seleccione un método</option>
+
+                        <option th:each="metodo : ${metodosPago}"
+                                th:value="${metodo}"
+                                th:text="${metodo}">
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- CAMPO PARA EFECTIVO -->
+
+                <div class="mb-3"
+                     id="campoEfectivo"
+                     style="display: none;">
+
+                    <label for="montoRecibido" class="form-label">
+                        Monto recibido (efectivo)
+                    </label>
+
+                    <input type="number"
+                           class="form-control"
+                           id="montoRecibido"
+                           name="montoRecibido"
+                           step="0.01"
+                           min="0"
+                           placeholder="Ingrese el monto recibido">
+
+                </div>
+
+                <!-- CAMPO PARA TARJETA -->
+
+                <div class="mb-3"
+                     id="campoTarjeta"
+                     style="display: none;">
+
+                    <label for="tarjetaAprobada" class="form-label">
+                        Resultado simulado de tarjeta
+                    </label>
+
+                    <select id="tarjetaAprobada"
+                            name="tarjetaAprobada"
+                            class="form-select">
+
+                        <option value="true">Aprobada</option>
+                        <option value="false">Rechazada</option>
+
+                    </select>
+
+                </div>
+
+                <!-- BOTONES -->
+
+                <button type="submit" class="btn btn-marca">
+                    Procesar pago
+                </button>
+
+                <a class="btn btn-outline-secondary"
+                   th:href="@{/pedidos}">
+                    Cancelar
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
+
+<!-- CONTROL DE CAMPOS SEGUN METODO DE PAGO -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const metodo = document.getElementById("metodo");
+
+    const campoEfectivo = document.getElementById("campoEfectivo");
+    const campoTarjeta = document.getElementById("campoTarjeta");
+
+    const montoRecibido = document.getElementById("montoRecibido");
+
+    function actualizarCampos() {
+
+        if (metodo.value === "EFECTIVO") {
+
+            campoEfectivo.style.display = "block";
+            campoTarjeta.style.display = "none";
+
+            montoRecibido.required = true;
+
+        } else if (metodo.value === "TARJETA") {
+
+            campoEfectivo.style.display = "none";
+            campoTarjeta.style.display = "block";
+
+            montoRecibido.required = false;
+
+        } else {
+
+            campoEfectivo.style.display = "none";
+            campoTarjeta.style.display = "none";
+
+            montoRecibido.required = false;
+
+        }
+
+    }
+
+    metodo.addEventListener("change", actualizarCampos);
+
+    actualizarCampos();
+
+});
+</script>
+
+<script th:replace="~{fragmentos/layout :: scripts}"></script>
+
+</body>
+</html>

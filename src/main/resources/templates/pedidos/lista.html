@@ -1,0 +1,121 @@
+```html
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragmentos/layout :: cabecera('Pedidos')}"></head>
+
+<body>
+
+<nav th:replace="~{fragmentos/layout :: menu}"></nav>
+
+<main class="container my-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Pedidos</h1>
+        <a class="btn btn-marca" th:href="@{/pedidos/nuevo}">Nuevo pedido</a>
+    </div>
+
+    <div th:replace="~{fragmentos/layout :: mensajes}"></div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle bg-white">
+
+            <thead class="table-light">
+                <tr>
+                    <th>No.</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Estado</th>
+                    <th class="text-end">Total</th>
+                    <th class="text-end">Puntos</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:each="p : ${pedidos}">
+
+                    <td th:text="${p.id}"></td>
+
+                    <td th:text="${#temporals.format(p.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+
+                    <td th:text="${p.idCliente != null} ? ${clientes[p.idCliente]} : 'Sin cliente'"></td>
+
+                    <td th:switch="${p.estado.name()}">
+                        <span th:case="'PENDIENTE'" class="badge bg-warning text-dark">Pendiente</span>
+                        <span th:case="'PAGADO'" class="badge bg-success">Pagado</span>
+                        <span th:case="'ENTREGADO'" class="badge bg-primary">Entregado</span>
+                        <span th:case="*" class="badge bg-secondary">Anulado</span>
+                    </td>
+
+                    <td class="text-end"
+                        th:text="'Q' + ${#numbers.formatDecimal(p.total, 1, 'COMMA', 2, 'POINT')}">
+                    </td>
+
+                    <td class="text-end" th:text="${p.puntosGanados}"></td>
+
+                    <td>
+                        <div class="d-flex flex-wrap gap-1">
+
+                            <a class="btn btn-sm btn-outline-primary"
+                               th:href="@{/pedidos/detalle/{id}(id=${p.id})}">
+                                Detalle
+                            </a>
+
+                            <a class="btn btn-sm btn-success"
+                               th:if="${p.estado.name() == 'PENDIENTE'}"
+                               th:href="@{/pagos(id=${p.id})}">
+                                Pagar
+                            </a>
+
+                            <a class="btn btn-sm btn-outline-success"
+                               th:if="${p.estado.name() == 'PAGADO' or p.estado.name() == 'ENTREGADO'}"
+                               th:href="@{/pedidos/comprobante/{id}(id=${p.id})}">
+                                Ver comprobante
+                            </a>
+
+                            <form method="post"
+                                  th:if="${p.estado.name() == 'PENDIENTE'}"
+                                  th:action="@{/pedidos/anular/{id}(id=${p.id})}"
+                                  onsubmit="return confirm('Deseas anular este pedido?');">
+
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    Anular
+                                </button>
+
+                            </form>
+
+                            <form method="post"
+                                  th:if="${p.estado.name() == 'PAGADO'}"
+                                  th:action="@{/pedidos/entregar/{id}(id=${p.id})}">
+
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    Entregar
+                                </button>
+
+                            </form>
+
+                        </div>
+                    </td>
+
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(pedidos)}">
+                    <td colspan="7" class="text-center text-muted">
+                        No hay pedidos registrados.
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+
+</main>
+
+<script th:replace="~{fragmentos/layout :: scripts}"></script>
+
+</body>
+</html>
+```
