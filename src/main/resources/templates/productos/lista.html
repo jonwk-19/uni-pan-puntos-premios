@@ -42,7 +42,7 @@
                 <td th:text="${p.codigo}"></td>
                 <td th:text="${p.categoria.etiqueta}"></td>
                 <td th:text="${p.nombre}"></td>
-                <td class="text-end" th:text="'$' + ${#numbers.formatDecimal(p.precio, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td class="text-end" th:text="'Q' + ${#numbers.formatDecimal(p.precio, 1, 'COMMA', 2, 'POINT')}"></td>
                 <td class="text-end" th:text="${p.existencia}"></td>
                 <td>
                     <span class="badge" th:classappend="${p.activo} ? 'bg-success' : 'bg-secondary'"

@@ -1,20 +1,130 @@
 package com.umg.edu.mvcweb.servicio;
 
+import com.umg.edu.mvcweb.dao.MenuDAO;
 import com.umg.edu.mvcweb.dao.PedidoDAO;
-import com.umg.edu.mvcweb.dao.impl.PedidoDAOImpl;
+import com.umg.edu.mvcweb.excepcion.NegocioException;
+import com.umg.edu.mvcweb.modelo.Cliente;
+import com.umg.edu.mvcweb.modelo.DetallePedido;
 import com.umg.edu.mvcweb.modelo.EstadoPedido;
+import com.umg.edu.mvcweb.modelo.Menu;
 import com.umg.edu.mvcweb.modelo.Pedido;
+import com.umg.edu.mvcweb.modelo.Producto;
 import com.umg.edu.mvcweb.util.ConexionDB;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import org.springframework.stereotype.Service;
 
 @Service
 public class PedidoService {
 
-    private final PedidoDAO pedidoDAO = new PedidoDAOImpl();
+    @Autowired
+    private PedidoDAO pedidoDAO;
+
+    @Autowired
+    private MenuDAO menuDAO;
+
+    @Autowired
+    private ClienteServicio clienteServicio;
+
+    @Autowired
+    private ProductoServicio productoServicio;
+
+    public int registrarDesdeArticulos(
+            int idCliente,
+            List<String> articulos,
+            List<Integer> cantidades) throws SQLException, NegocioException {
+
+        Cliente cliente = clienteServicio.buscarPorId(idCliente);
+
+        if (cliente == null || !cliente.isActivo()) {
+            throw new NegocioException(
+                    "El cliente seleccionado no existe o esta inactivo.");
+        }
+
+        if (articulos == null || cantidades == null
+                || articulos.isEmpty()
+                || articulos.size() != cantidades.size()) {
+
+            throw new NegocioException("Debes agregar al menos un articulo.");
+        }
+
+        Pedido pedido = new Pedido();
+        pedido.setIdCliente(idCliente);
+
+        for (int i = 0; i < articulos.size(); i++) {
+            pedido.agregarDetalle(
+                    crearDetalle(articulos.get(i), cantidades.get(i)));
+        }
+
+        return registrar(pedido);
+    }
+
+    private DetallePedido crearDetalle(String articulo, int cantidad)
+            throws SQLException, NegocioException {
+
+        if (articulo == null || articulo.isBlank()) {
+            throw new NegocioException("Debes seleccionar todos los articulos.");
+        }
+
+        if (cantidad <= 0) {
+            throw new NegocioException("La cantidad debe ser mayor que cero.");
+        }
+
+        DetallePedido detalle = new DetallePedido();
+        detalle.setCantidad(cantidad);
+
+        try {
+            if (articulo.startsWith("P:")) {
+
+                Producto producto = productoServicio.buscarPorId(
+                        Integer.parseInt(articulo.substring(2)));
+
+                if (producto == null) {
+                    throw new NegocioException(
+                            "Uno de los productos seleccionados no existe.");
+                }
+
+                productoServicio.validarVenta(producto, cantidad);
+
+                detalle.setIdProducto(producto.getId());
+                detalle.setNombre(producto.getNombre());
+                detalle.setPrecioUnitario(producto.getPrecio());
+
+            } else if (articulo.startsWith("M:")) {
+
+                Menu menu = menuDAO.buscarPorId(
+                        Integer.parseInt(articulo.substring(2)));
+
+                if (menu == null || !menu.isActivo()) {
+                    throw new NegocioException(
+                            "Uno de los menus seleccionados no existe o esta inactivo.");
+                }
+
+                if (!menu.estaDisponible(cantidad)) {
+                    throw new NegocioException(
+                            "No hay suficiente existencia para el menu: "
+                            + menu.getNombre());
+                }
+
+                detalle.setIdMenu(menu.getId());
+                detalle.setNombre(menu.getNombre());
+                detalle.setPrecioUnitario(menu.getPrecio());
+
+            } else {
+                throw new NegocioException(
+                        "El articulo seleccionado no es valido.");
+            }
+
+        } catch (NumberFormatException e) {
+            throw new NegocioException("El articulo seleccionado no es valido.");
+        }
+
+        return detalle;
+    }
 
     public int registrar(Pedido pedido) throws SQLException {
 
