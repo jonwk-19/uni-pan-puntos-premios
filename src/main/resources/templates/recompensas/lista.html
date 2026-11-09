@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragmentos/layout :: cabecera('Recompensas')}"></head>
+
+<body>
+
+<nav th:replace="~{fragmentos/layout :: menu}"></nav>
+
+<main class="container my-4">
+
+    <div class="mb-3">
+        <h1 class="h3">Recompensas y Canjes</h1>
+        <p class="text-muted">
+            Canjea los puntos acumulados por recompensas disponibles.
+        </p>
+    </div>
+
+    <div th:replace="~{fragmentos/layout :: mensajes}"></div>
+
+    <div class="alert alert-info" th:if="${#lists.isEmpty(clientes)}">
+        No hay clientes activos registrados.
+    </div>
+
+    <div class="row g-3">
+
+        <div class="col-md-6 col-lg-4"
+             th:each="r : ${recompensas}">
+
+            <div class="card h-100 shadow-sm">
+
+                <div class="card-body">
+
+                    <h5 class="card-title" th:text="${r.nombre}"></h5>
+
+                    <p class="text-muted mb-3">
+                        Puntos necesarios:
+                        <strong th:text="${r.puntosRequeridos}"></strong>
+                    </p>
+
+                    <form method="post"
+                          th:action="@{/recompensas/canjear}">
+
+                        <input type="hidden"
+                               name="idRecompensa"
+                               th:value="${r.id}">
+
+                        <label class="form-label">
+                            Seleccionar cliente
+                        </label>
+
+                        <select class="form-select mb-3"
+                                name="idCliente"
+                                required
+                                th:disabled="${#lists.isEmpty(clientes)}">
+
+                            <option value="">Selecciona un cliente</option>
+
+                            <option th:each="c : ${clientes}"
+                                    th:value="${c.id}"
+                                    th:text="${c.nombreCompleto + ' - ' + c.puntos + ' puntos'}">
+                            </option>
+
+                        </select>
+
+                        <button type="submit"
+                                class="btn btn-marca w-100"
+                                th:disabled="${#lists.isEmpty(clientes)}">
+                            Realizar canje
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-12" th:if="${#lists.isEmpty(recompensas)}">
+            <div class="alert alert-warning">
+                No hay recompensas activas disponibles.
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<script th:replace="~{fragmentos/layout :: scripts}"></script>
+
+</body>
+</html>
+ 
