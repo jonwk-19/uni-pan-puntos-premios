@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragmentos/layout :: cabecera('Historial de puntos')}"></head>
+
+<body>
+
+<nav th:replace="~{fragmentos/layout :: menu}"></nav>
+
+<main class="container my-4">
+
+    <h1 class="h3 mb-4">Historial de puntos</h1>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 th:text="${cliente.nombreCompleto}"></h5>
+
+            <p>
+                Documento:
+                <span th:text="${cliente.documento}"></span>
+            </p>
+
+            <p>
+                Puntos actuales:
+                <strong th:text="${cliente.puntos}"></strong>
+            </p>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Puntos</th>
+                    <th>Pedido</th>
+                    <th>Recompensa</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="movimiento : ${movimientos}">
+                    <td th:text="${movimiento.fechaTexto}"></td>
+
+                    <td>
+                        <span th:if="${movimiento.tipo.name() == 'ACUMULACION'}">
+                            Acumulación
+                        </span>
+                        <span th:if="${movimiento.tipo.name() == 'CANJE'}">
+                            Canje
+                        </span>
+                    </td>
+
+                    <td th:text="${movimiento.puntos}"></td>
+
+                    <td th:text="${movimiento.idPedido != null ? movimiento.idPedido : '-'}"></td>
+
+                    <td th:text="${movimiento.idRecompensa != null ? movimiento.idRecompensa : '-'}"></td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(movimientos)}">
+                    <td colspan="5" class="text-center">
+                        Este cliente todavía no tiene movimientos de puntos.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a th:href="@{/clientes}" class="btn btn-secondary">
+        Volver a clientes
+    </a>
+
+</main>
+
+</body>
+</html> 

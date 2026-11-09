@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/layout :: cabecera('Clientes')}"></head>
+<body>
+
+<nav th:replace="~{fragmentos/layout :: menu}"></nav>
+
+<main class="container my-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Clientes y Fidelización</h1>
+        <a class="btn btn-marca" th:href="@{/clientes/nuevo}">
+            Nuevo cliente
+        </a>
+    </div>
+
+    <div th:replace="~{fragmentos/layout :: mensajes}"></div>
+
+    <form class="row g-2 mb-3" method="get" th:action="@{/clientes}">
+        <div class="col-md-5">
+            <input type="text"
+                   class="form-control"
+                   name="buscar"
+                   placeholder="Buscar por nombre o apellidos"
+                   th:value="${buscar}">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-primary">
+                Buscar
+            </button>
+            <a class="btn btn-outline-secondary" th:href="@{/clientes}">
+                Limpiar
+            </a>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle bg-white">
+            <thead class="table-light">
+            <tr>
+                <th>Documento</th>
+                <th>Nombre completo</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th class="text-end">Puntos</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="c : ${clientes}"
+                th:classappend="${!c.activo} ? 'table-secondary text-muted'">
+
+                <td th:text="${c.documento}"></td>
+                <td th:text="${c.nombreCompleto}"></td>
+                <td th:text="${c.telefono}"></td>
+                <td th:text="${c.email}"></td>
+                <td class="text-end fw-bold" th:text="${c.puntos}"></td>
+
+                <td>
+                    <span class="badge"
+                          th:classappend="${c.activo} ? 'bg-success' : 'bg-secondary'"
+                          th:text="${c.activo} ? 'Activo' : 'Desactivado'">
+                    </span>
+                </td>
+
+                <td>
+                    <div class="d-flex flex-wrap gap-1">
+
+                        <a class="btn btn-sm btn-outline-primary"
+                           th:href="@{/clientes/editar/{id}(id=${c.id})}">
+                            Editar
+                        </a>
+
+                        <a class="btn btn-sm btn-outline-info"
+                           th:href="@{/clientes/historial/{id}(id=${c.id})}">
+                            Historial
+                        </a>
+
+                        <form method="post"
+                              th:action="@{/clientes/estado/{id}(id=${c.id})}">
+                            <input type="hidden"
+                                   name="activo"
+                                   th:value="${!c.activo}">
+
+                            <button type="submit"
+                                    class="btn btn-sm btn-outline-dark"
+                                    th:text="${c.activo} ? 'Desactivar' : 'Activar'">
+                            </button>
+                        </form>
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(clientes)}">
+                <td colspan="7" class="text-center text-muted">
+                    No hay clientes registrados.
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+<script th:replace="~{fragmentos/layout :: scripts}"></script>
+
+</body>
+</html>
+ 

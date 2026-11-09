@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragmentos/layout :: cabecera('Formulario de clientes')}"></head>
+
+<body>
+
+<nav th:replace="~{fragmentos/layout :: menu}"></nav>
+
+<main class="container my-4">
+
+    <div class="mb-3">
+        <h1 class="h3"
+            th:text="${editando} ? 'Editar cliente' : 'Nuevo cliente'">
+        </h1>
+        <p class="text-muted">
+            Ingresa los datos del cliente.
+        </p>
+    </div>
+
+    <div th:replace="~{fragmentos/layout :: mensajes}"></div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form method="post"
+                  th:action="${editando} ? @{/clientes/actualizar} : @{/clientes/guardar}"
+                  th:object="${cliente}">
+
+                <input type="hidden" th:field="*{id}">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label">Documento</label>
+                        <input type="text"
+                               class="form-control"
+                               th:field="*{documento}"
+                               required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre</label>
+                        <input type="text"
+                               class="form-control"
+                               th:field="*{nombre}"
+                               required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Apellidos</label>
+                        <input type="text"
+                               class="form-control"
+                               th:field="*{apellidos}"
+                               required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text"
+                               class="form-control"
+                               th:field="*{telefono}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Correo electrónico</label>
+                        <input type="email"
+                               class="form-control"
+                               th:field="*{email}">
+                    </div>
+
+                    <div class="col-md-6" th:if="${editando}">
+                        <label class="form-label">Puntos acumulados</label>
+                        <input type="number"
+                               class="form-control"
+                               th:field="*{puntos}"
+                               readonly>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   th:field="*{activo}">
+                            <label class="form-check-label">
+                                Cliente activo
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+
+                    <button type="submit"
+                            class="btn btn-marca"
+                            th:text="${editando} ? 'Actualizar cliente' : 'Guardar cliente'">
+                    </button>
+
+                    <a class="btn btn-outline-secondary"
+                       th:href="@{/clientes}">
+                        Cancelar
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</main>
+
+<script th:replace="~{fragmentos/layout :: scripts}"></script>
+
+</body>
+</html>
+
